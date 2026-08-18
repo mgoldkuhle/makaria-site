@@ -1,6 +1,6 @@
 # makaria-site
 
-Website der AMV Makaria Bonn — SvelteKit + Tailwind v4, built as a fully static site (`adapter-static`), deployed to Uberspace.
+Website der AMV Makaria Bonn. SvelteKit + Tailwind v4, built as a fully static site (`adapter-static`), deployed to Uberspace.
 
 ## Developing
 
