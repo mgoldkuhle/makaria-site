@@ -1,0 +1,126 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@font-face {
+	font-family: 'Figtree';
+	font-weight: 400 700;
+	font-style: normal;
+	font-display: swap;
+	src: url('/fonts/figtree.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Syne';
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+	src: url('/fonts/syne.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Gaegu';
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+	src: url('/fonts/gaegu.woff2') format('woff2');
+}
+
+@theme {
+	--font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+	--font-display: 'Syne', ui-sans-serif, system-ui, sans-serif;
+	--font-hand: 'Gaegu', ui-sans-serif, system-ui, sans-serif;
+
+	--color-paper: #ffffff;
+	--color-surface-2: #f4f6fb;
+	--color-ink: #1c2333;
+	--color-muted: #626b83;
+	--color-blue: #3457c9;
+	--color-blue-soft: #e3eafb;
+	--color-red: #d6432e;
+	--color-red-soft: #fce3de;
+	--color-gold: #ad7a1f;
+	--color-border: #1c233320;
+}
+
+@layer base {
+	html {
+		scroll-behavior: smooth;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		html {
+			scroll-behavior: auto;
+		}
+	}
+
+	body {
+		background: var(--color-paper);
+		color: var(--color-ink);
+		font-family: var(--font-sans);
+	}
+
+	h1,
+	h2,
+	h3 {
+		font-family: var(--font-display);
+		font-weight: 700;
+		text-wrap: balance;
+	}
+
+	.prose :where(h1, h2, h3, h4):not(:where([class~='not-prose'] *)) {
+		font-family: var(--font-display);
+	}
+
+	.prose :where(a):not(:where([class~='not-prose'] *)) {
+		color: var(--color-blue);
+	}
+
+	.no-scrollbar {
+		scrollbar-width: none;
+	}
+
+	.no-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+
+	.section-mark {
+		display: block;
+		width: 3.5rem;
+		height: 4px;
+		margin-bottom: 1rem;
+		background: var(--color-red);
+		border-radius: 3px;
+	}
+
+	.reveal-init > * {
+		opacity: 0;
+		transform: translateY(16px) scale(0.95) rotate(-1deg);
+		transition:
+			opacity 0.5s ease,
+			transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+
+	.reveal-visible > * {
+		opacity: 1;
+		transform: translateY(0) scale(1) rotate(0deg);
+	}
+
+	.reveal-visible > *:nth-child(1) {
+		transition-delay: 0ms;
+	}
+	.reveal-visible > *:nth-child(2) {
+		transition-delay: 90ms;
+	}
+	.reveal-visible > *:nth-child(3) {
+		transition-delay: 180ms;
+	}
+	.reveal-visible > *:nth-child(4) {
+		transition-delay: 270ms;
+	}
+	.reveal-visible > *:nth-child(5) {
+		transition-delay: 360ms;
+	}
+	.reveal-visible > *:nth-child(6) {
+		transition-delay: 450ms;
+	}
+}
