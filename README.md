@@ -1,42 +1,37 @@
-# sv
+# makaria-site
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
-
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```sh
-# create a new project
-npx sv create my-app
-```
-
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-npx sv@0.17.0 create --template minimal --types ts --add prettier eslint tailwindcss="plugins:typography" sveltekit-adapter="adapter:static" --install npm site
-```
+Website der AMV Makaria Bonn — SvelteKit + Tailwind v4, built as a fully static site (`adapter-static`), deployed to Uberspace.
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+```sh
+npm install
+npm run dev -- --open
+```
+
+## Checks
 
 ```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+npm run format   # prettier --write
+npm run lint      # prettier --check + eslint
+npm run check     # svelte-check (types)
 ```
 
 ## Building
 
-To create a production version of your app:
-
 ```sh
-npm run build
+npm run build      # outputs to build/, root-relative paths
+npm run preview    # serve the production build locally
 ```
 
-You can preview the production build with `npm run preview`.
+To build a copy for a preview subfolder (e.g. `amv-makaria.de/neu/`) instead of the domain root:
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+```sh
+BASE_PATH=/neu VITE_NOINDEX=true npm run build
+```
+
+`BASE_PATH` prefixes all internal links/assets; `VITE_NOINDEX` adds a `noindex` meta tag so the preview doesn't get crawled. Omit both for a normal production build.
+
+## Deploying
+
+The build output in `build/` is plain static HTML/CSS/JS/images — copy it to the Uberspace document root (or a subfolder of it) with `rsync`. No Node process required on the server.
