@@ -92,7 +92,7 @@
 	<div class="grid grid-cols-1 items-center gap-10 md:grid-cols-2">
 		<div>
 			<span class="section-mark" aria-hidden="true"></span>
-			<h2 class="font-display text-2xl font-bold sm:text-3xl">Bunt Gemischt.</h2>
+			<h2 class="font-display text-3xl font-bold sm:text-4xl">Bunt Gemischt.</h2>
 			<p class="mt-3 text-muted">
 				Rund 20 Aktive, die für Konzerte, Theater, Filmabende, Jammen oder zum Entspannen im Garten
 				zusammen kommen. Ob selbst kunstschaffend, an der Tontechnik oder nur zum Zuhören: bei uns
@@ -100,7 +100,7 @@
 				<span class="align-middle font-hand text-2xl font-bold text-red">herzlich willkommen.</span>
 			</p>
 		</div>
-		<div class="aspect-video w-full overflow-hidden rounded-2xl border border-border">
+		<div class="aspect-video w-full overflow-hidden border border-border">
 			<iframe
 				title="Video: AMV Makaria Bonn"
 				src="https://www.youtube-nocookie.com/embed/ZQ7JnpB5FMM"
@@ -118,19 +118,23 @@
 	class="relative overflow-hidden"
 	style="background: linear-gradient(51deg, var(--color-red) 0%, var(--color-blue) 100%)"
 >
-	<div class="mx-auto max-w-5xl px-4 py-16 sm:py-20">
-		<span class="section-mark bg-white" aria-hidden="true"></span>
-		<h2
-			class="font-display text-2xl font-bold text-white sm:text-3xl"
-			style="text-shadow: 0 2px 12px rgba(0,0,0,.25)"
-		>
-			Ein paar Eindrücke aus dem Makarenhaus.
-		</h2>
+	<div class="py-16 sm:py-20">
+		<div class="mx-auto max-w-5xl px-4">
+			<span class="section-mark section-mark--on-color" aria-hidden="true"></span>
+			<h2
+				class="font-display text-3xl font-bold text-white sm:text-4xl"
+				style="text-shadow: 0 2px 12px rgba(0,0,0,.25)"
+			>
+				Ein paar Eindrücke aus dem Makarenhaus.
+			</h2>
+		</div>
 
 		<div class="relative mt-8">
+			<!-- runs off the right edge of the viewport: reads as "there is more", and
+			     stops the carousel sitting in a polite centred box -->
 			<div
 				bind:this={galleryEl}
-				class="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2"
+				class="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pr-4 pb-2 pl-[max(1rem,calc((100vw-64rem)/2))]"
 			>
 				{#each gallery as image (image.src)}
 					<button
@@ -143,12 +147,12 @@
 							src={asset(image.src)}
 							alt={image.alt}
 							loading="lazy"
-							class="aspect-[4/3] w-64 rounded-2xl object-cover shadow-lg transition hover:opacity-90 sm:w-72"
+							class="aspect-[4/3] w-64 object-cover shadow-lg transition hover:opacity-90 sm:w-72"
 						/>
 					</button>
 				{/each}
 			</div>
-			<div class="mt-4 flex justify-center gap-3">
+			<div class="mx-auto mt-6 flex max-w-5xl gap-3 px-4">
 				<button
 					type="button"
 					aria-label="Zurück"
@@ -187,13 +191,13 @@
 <section>
 	<div class="mx-auto max-w-5xl px-4 py-16 sm:py-20">
 		<span class="section-mark" aria-hidden="true"></span>
-		<h2 class="font-display text-2xl font-bold sm:text-3xl">Hier gehts weiter.</h2>
+		<h2 class="font-display text-3xl font-bold sm:text-4xl">Hier gehts weiter.</h2>
 
 		<div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
 			{#each highlights as item (item.href)}
 				<a
 					href={resolve(item.href)}
-					class="rounded-2xl {item.tint} p-6 text-white transition hover:-translate-y-1 hover:shadow-lg"
+					class="band-wipe {item.tint} p-6 pb-8 text-white transition-colors hover:bg-ink"
 				>
 					<h3 class="font-display font-bold">{item.title}</h3>
 					<p class="mt-2 text-sm text-white/80">{item.text}</p>

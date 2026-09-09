@@ -13,7 +13,7 @@
 	] as const;
 </script>
 
-<header class="relative border-b border-border">
+<header class="relative">
 	<div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
 		<a href={resolve('/')} class="flex items-center gap-3">
 			<span class="h-9 w-9 shrink-0"><Crest size="mark" /></span>
@@ -64,4 +64,6 @@
 			{/each}
 		</nav>
 	</div>
+	<!-- das Band: the blue/white/red ribbon closes off the header on every page -->
+	<div class="band-h h-1" aria-hidden="true"></div>
 </header>

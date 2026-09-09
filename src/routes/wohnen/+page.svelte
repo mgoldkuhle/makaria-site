@@ -49,7 +49,7 @@
 <section>
 	<div use:reveal class="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-12 sm:py-16">
 		{#each tiles as tile (tile.title)}
-			<div class="overflow-hidden rounded-3xl {tile.bg}">
+			<div class="band-top overflow-hidden {tile.bg}">
 				<img
 					src={asset(tile.image)}
 					alt={tile.alt}

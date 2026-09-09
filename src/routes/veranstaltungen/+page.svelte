@@ -14,7 +14,7 @@
 <section class="mx-auto max-w-5xl px-4 py-16 sm:py-20">
 	<span class="section-mark" aria-hidden="true"></span>
 	<div class="mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-2">
-		<h1 class="font-display text-3xl font-bold sm:text-4xl">Das steht dieses Semester so an.</h1>
+		<h1 class="font-display text-4xl font-bold sm:text-5xl">Das steht dieses Semester so an.</h1>
 		<div class="flex flex-wrap gap-x-4 gap-y-1">
 			<a
 				href={asset(downloads.pdf)}
@@ -37,7 +37,7 @@
 
 	<div use:reveal class="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2">
 		{#each sampleEvents as event (event.slug)}
-			<article class="overflow-hidden rounded-2xl bg-red text-white">
+			<article class="band-top overflow-hidden bg-red text-white">
 				<img
 					src={asset(event.image)}
 					alt={event.imageAlt}
@@ -63,11 +63,11 @@
 <section>
 	<div class="mx-auto max-w-5xl px-4 py-16 sm:py-20">
 		<span class="section-mark" aria-hidden="true"></span>
-		<h2 class="font-display text-2xl font-bold">Feste Termine jede Woche</h2>
+		<h2 class="font-display text-3xl font-bold sm:text-4xl">Feste Termine jede Woche</h2>
 
 		<div use:reveal class="mt-8">
 			{#each weekly as item (item.title)}
-				<div class="rounded-2xl bg-blue p-5 text-center text-white">
+				<div class="bg-blue p-5 text-center text-white">
 					<h3 class="font-display font-bold">{item.time}</h3>
 					<p class="text-white/80">{item.title}</p>
 				</div>

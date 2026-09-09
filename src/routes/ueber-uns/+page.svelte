@@ -10,7 +10,7 @@
 
 <section class="mx-auto max-w-3xl px-4 py-16 sm:py-20">
 	<span class="section-mark" aria-hidden="true"></span>
-	<h1 class="font-display text-3xl font-bold sm:text-4xl">Wer wir sind</h1>
+	<h1 class="font-display text-4xl font-bold sm:text-5xl">Wer wir sind</h1>
 
 	<div class="mt-10 grid grid-cols-3 gap-4 text-center sm:gap-8">
 		<div>
@@ -46,7 +46,7 @@
 		vorbei. Dort findest Du aktuellen Content.
 	</p>
 
-	<div class="mt-10 rounded-3xl bg-ink p-6 sm:p-8">
+	<div class="mt-10 bg-ink p-6 sm:p-8">
 		<p class="text-lg leading-relaxed text-white sm:text-xl">
 			Von Saufzwang, rechtsextremem Gedankengut und Teilen des traditionellen Verbindungsgeschehens,
 			wie dem Tragen von Farben, dem Schlagen oder dem Couleurbummel, distanzieren wir uns hingegen

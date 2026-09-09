@@ -42,6 +42,6 @@
 		</svg>
 	</button>
 	<div role="presentation" onclick={(e) => e.stopPropagation()}>
-		<img {src} {alt} class="max-h-[85vh] max-w-[90vw] rounded-2xl object-contain shadow-2xl" />
+		<img {src} {alt} class="max-h-[85vh] max-w-[90vw] object-contain shadow-2xl" />
 	</div>
 </div>

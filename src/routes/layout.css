@@ -83,13 +83,105 @@
 		display: none;
 	}
 
+	/* ---------------------------------------------------------------
+	   Das Band — the blue/white/red ribbon of the Verbindung, used as
+	   the site's recurring structural device rather than a generic rule.
+	   --------------------------------------------------------------- */
+
+	.band-v {
+		background: linear-gradient(
+			to bottom,
+			var(--color-blue) 0 33.334%,
+			#ffffff 33.334% 66.667%,
+			var(--color-red) 66.667% 100%
+		);
+	}
+
+	.band-h {
+		background: linear-gradient(
+			to right,
+			var(--color-blue) 0 33.334%,
+			#ffffff 33.334% 66.667%,
+			var(--color-red) 66.667% 100%
+		);
+	}
+
+	/* Section opener: a short length of the Band. */
 	.section-mark {
 		display: block;
-		width: 3.5rem;
-		height: 4px;
-		margin-bottom: 1rem;
-		background: var(--color-red);
-		border-radius: 3px;
+		width: 3.25rem;
+		height: 15px;
+		margin-bottom: 1.25rem;
+		background: linear-gradient(
+			to bottom,
+			var(--color-blue) 0 33.334%,
+			#ffffff 33.334% 66.667%,
+			var(--color-red) 66.667% 100%
+		);
+		/* keeps the white centre stripe readable on a white ground */
+		outline: 1px solid var(--color-border);
+		outline-offset: 0;
+	}
+
+	/* Same Band, on a coloured/photographic ground. */
+	.section-mark--on-color {
+		outline-color: rgba(255, 255, 255, 0.65);
+	}
+
+	/* A hairline of Band across the top edge of a card or photo. */
+	.band-top {
+		position: relative;
+	}
+
+	.band-top::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		right: 0;
+		left: 0;
+		height: 6px;
+		z-index: 1;
+		background: linear-gradient(
+			to right,
+			var(--color-blue) 0 33.334%,
+			#ffffff 33.334% 66.667%,
+			var(--color-red) 66.667% 100%
+		);
+	}
+
+	/* Hover: a length of Band wipes across the bottom of the tile. */
+	.band-wipe {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.band-wipe::after {
+		content: '';
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		height: 6px;
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+		background: linear-gradient(
+			to right,
+			var(--color-blue) 0 33.334%,
+			#ffffff 33.334% 66.667%,
+			var(--color-red) 66.667% 100%
+		);
+	}
+
+	.band-wipe:hover::after,
+	.band-wipe:focus-visible::after {
+		transform: scaleX(1);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.band-wipe::after {
+			transition: none;
+		}
 	}
 
 	.reveal-init > * {
