@@ -1,3 +1,9 @@
+<script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+</script>
+
+<Seo title="Datenschutz" description="Datenschutzerklärung der AMV Makaria Bonn." />
+
 <section class="mx-auto prose max-w-3xl px-4 py-16 sm:py-20">
 	<span class="section-mark not-prose" aria-hidden="true"></span>
 	<h1>Datenschutz</h1>

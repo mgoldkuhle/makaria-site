@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
 	import Crest from './Crest.svelte';
 
 	let open = $state(false);
@@ -51,9 +52,13 @@
 	>
 		<nav class="mx-auto grid max-w-5xl grid-cols-2 gap-2 px-4 pt-1 pb-6 sm:flex sm:gap-8">
 			{#each links as link (link.href)}
+				{@const current = page.url.pathname === link.href}
 				<a
 					href={resolve(link.href)}
-					class="font-display text-lg font-bold hover:text-red"
+					class="w-fit font-display text-lg font-bold hover:text-red {current
+						? 'text-red underline decoration-red decoration-wavy underline-offset-4'
+						: ''}"
+					aria-current={current ? 'page' : undefined}
 					onclick={() => (open = false)}>{link.label}</a
 				>
 			{/each}

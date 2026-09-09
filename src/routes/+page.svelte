@@ -2,6 +2,7 @@
 	import { resolve, asset } from '$app/paths';
 	import Crest from '$lib/components/Crest.svelte';
 	import Lightbox from '$lib/components/Lightbox.svelte';
+	import Seo from '$lib/components/Seo.svelte';
 
 	const highlights = [
 		{
@@ -52,6 +53,10 @@
 	}
 </script>
 
+<Seo
+	description="Die AMV Makaria Bonn ist eine gemischte, nicht schlagende und nicht farbentragende Studentenverbindung in der Bonner Südstadt: Konzerte, Theater, Jazzkeller, Konzertsaal mit Flügel und sieben Zimmer im Altbau."
+/>
+
 <section
 	class="relative overflow-hidden"
 	style="background: linear-gradient(51deg, var(--color-blue) 0%, var(--color-red) 100%)"
@@ -60,7 +65,7 @@
 		class="mx-auto grid max-w-5xl grid-cols-1 items-center gap-10 px-4 py-16 sm:py-24 md:grid-cols-2"
 	>
 		<div>
-			<p
+			<h1
 				class="-rotate-2 font-hand text-4xl font-bold text-white sm:text-5xl"
 				style="text-shadow: 0 1px 0 rgba(0,0,0,.25), 0 10px 24px rgba(0,0,0,.3)"
 			>
@@ -69,7 +74,7 @@
 					<span class="absolute right-[6%] -bottom-2 left-[3%] h-1 rotate-1 rounded bg-white/80"
 					></span>
 				</span>
-			</p>
+			</h1>
 			<p
 				class="mt-6 max-w-[38ch] text-lg text-white"
 				style="text-shadow: 0 2px 8px rgba(0,0,0,.25)"
@@ -87,7 +92,7 @@
 	<div class="grid grid-cols-1 items-center gap-10 md:grid-cols-2">
 		<div>
 			<span class="section-mark" aria-hidden="true"></span>
-			<p class="font-display text-2xl font-bold sm:text-3xl">Bunt Gemischt.</p>
+			<h2 class="font-display text-2xl font-bold sm:text-3xl">Bunt Gemischt.</h2>
 			<p class="mt-3 text-muted">
 				Rund 20 Aktive, die für Konzerte, Theater, Filmabende, Jammen oder zum Entspannen im Garten
 				zusammen kommen. Ob selbst kunstschaffend, an der Tontechnik oder nur zum Zuhören: bei uns
@@ -115,12 +120,12 @@
 >
 	<div class="mx-auto max-w-5xl px-4 py-16 sm:py-20">
 		<span class="section-mark bg-white" aria-hidden="true"></span>
-		<p
+		<h2
 			class="font-display text-2xl font-bold text-white sm:text-3xl"
 			style="text-shadow: 0 2px 12px rgba(0,0,0,.25)"
 		>
 			Ein paar Eindrücke aus dem Makarenhaus.
-		</p>
+		</h2>
 
 		<div class="relative mt-8">
 			<div
@@ -182,7 +187,7 @@
 <section>
 	<div class="mx-auto max-w-5xl px-4 py-16 sm:py-20">
 		<span class="section-mark" aria-hidden="true"></span>
-		<p class="font-display text-2xl font-bold sm:text-3xl">Hier gehts weiter.</p>
+		<h2 class="font-display text-2xl font-bold sm:text-3xl">Hier gehts weiter.</h2>
 
 		<div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
 			{#each highlights as item (item.href)}
@@ -190,7 +195,7 @@
 					href={resolve(item.href)}
 					class="rounded-2xl {item.tint} p-6 text-white transition hover:-translate-y-1 hover:shadow-lg"
 				>
-					<h2 class="font-display font-bold">{item.title}</h2>
+					<h3 class="font-display font-bold">{item.title}</h3>
 					<p class="mt-2 text-sm text-white/80">{item.text}</p>
 				</a>
 			{/each}

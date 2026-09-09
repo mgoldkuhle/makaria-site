@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve, asset } from '$app/paths';
 	import { reveal } from '$lib/actions/reveal';
+	import Seo from '$lib/components/Seo.svelte';
 
 	const tiles = [
 		{
@@ -33,6 +34,12 @@
 		}
 	] as const;
 </script>
+
+<Seo
+	title="Wohnen"
+	description="Sieben Zimmer für Studierende im Altbau am Bonner Talweg — mit Konzertsaal, Jazzkeller, Garten und studifreundlicher Miete, mitten in der Bonner Südstadt."
+	image="/img/fassade.jpg"
+/>
 
 <section class="mx-auto max-w-5xl px-4 pt-16 pb-8 text-center sm:pt-20">
 	<span class="section-mark mx-auto" aria-hidden="true"></span>

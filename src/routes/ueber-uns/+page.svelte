@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { asset } from '$app/paths';
+	import Seo from '$lib/components/Seo.svelte';
 </script>
+
+<Seo
+	title="Über uns"
+	description="Gemischt, nicht schlagend, nicht farbentragend: rund 20 Aktive, 18 Auswärtige und 80 Ehemalige, die in Bonn gemeinsam musizieren, Theater machen und feiern."
+/>
 
 <section class="mx-auto max-w-3xl px-4 py-16 sm:py-20">
 	<span class="section-mark" aria-hidden="true"></span>
@@ -34,14 +40,14 @@
 		– bist Du bei uns an der richtigen Adresse. Schau gerne auf unserer
 		<a
 			href="https://www.instagram.com/makariabonn/"
-			class="text-2x1 inline-block font-hand text-lg font-bold text-blue underline decoration-wavy transition-transform hover:rotate-3"
+			class="inline-block font-hand text-lg font-bold text-blue underline decoration-wavy transition-transform hover:rotate-3"
 			>Instagram-Seite</a
 		>
 		vorbei. Dort findest Du aktuellen Content.
 	</p>
 
 	<div class="mt-10 rounded-3xl bg-ink p-6 sm:p-8">
-		<p class="sm:text-l text-lg leading-relaxed text-white">
+		<p class="text-lg leading-relaxed text-white sm:text-xl">
 			Von Saufzwang, rechtsextremem Gedankengut und Teilen des traditionellen Verbindungsgeschehens,
 			wie dem Tragen von Farben, dem Schlagen oder dem Couleurbummel, distanzieren wir uns hingegen
 			ausdrücklich.

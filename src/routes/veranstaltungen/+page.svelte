@@ -2,7 +2,14 @@
 	import { asset } from '$app/paths';
 	import { reveal } from '$lib/actions/reveal';
 	import { sampleEvents, weekly, downloads } from '$lib/data/events';
+	import Seo from '$lib/components/Seo.svelte';
 </script>
+
+<Seo
+	title="Veranstaltungen"
+	description="Open-Mic-Nights, Wohnzimmerkonzerte, Bandkonzerte und Stiftungsfest — dazu jede Woche szenisches Theater. Das Semesterprogramm gibt es als PDF und .ics."
+	image="/img/live_in_der_makaria.jpg"
+/>
 
 <section class="mx-auto max-w-5xl px-4 py-16 sm:py-20">
 	<span class="section-mark" aria-hidden="true"></span>
@@ -56,7 +63,7 @@
 <section>
 	<div class="mx-auto max-w-5xl px-4 py-16 sm:py-20">
 		<span class="section-mark" aria-hidden="true"></span>
-		<p class="font-display text-2xl font-bold">Feste Termine jede Woche</p>
+		<h2 class="font-display text-2xl font-bold">Feste Termine jede Woche</h2>
 
 		<div use:reveal class="mt-8">
 			{#each weekly as item (item.title)}

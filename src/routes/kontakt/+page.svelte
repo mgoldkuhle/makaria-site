@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+
 	// $effect (not $derived) is intentional: it only runs after hydration, so the
 	// address is absent from the prerendered HTML and only appears for JS-executing
 	// clients, same as the obfuscation on the old site.
@@ -9,6 +11,11 @@
 		email = 'kontakt' + '@' + 'amv-makaria.de';
 	});
 </script>
+
+<Seo
+	title="Kontakt"
+	description="Schreib uns oder komm einfach vorbei: AMV Makaria Bonn, Bonner Talweg 60, 53113 Bonn."
+/>
 
 <section class="mx-auto max-w-3xl px-4 py-16 text-center sm:py-20">
 	<span class="section-mark mx-auto" aria-hidden="true"></span>
@@ -37,7 +44,7 @@
 <section>
 	<div class="mx-auto max-w-3xl px-4 py-16 text-center sm:py-20">
 		<span class="section-mark mx-auto" aria-hidden="true"></span>
-		<p class="font-display text-2xl font-bold">So findest Du uns.</p>
+		<h2 class="font-display text-2xl font-bold">So findest Du uns.</h2>
 
 		<div class="mt-8 aspect-video w-full overflow-hidden rounded-2xl border border-border">
 			<iframe

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+	<title>AMV Makaria Bonn</title>
+	<rect width="64" height="64" fill="#ffffff" />
+	<g transform="rotate(-35 32 32)">
+		<rect x="-24" y="8" width="112" height="16" fill="#3457c9" />
+		<rect x="-24" y="24" width="112" height="16" fill="#ffffff" />
+		<rect x="-24" y="40" width="112" height="16" fill="#d6432e" />
+	</g>
+</svg>

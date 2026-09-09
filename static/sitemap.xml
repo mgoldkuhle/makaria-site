@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+	<url>
+		<loc>https://amv-makaria.de/</loc>
+		<priority>1.0</priority>
+	</url>
+	<url>
+		<loc>https://amv-makaria.de/ueber-uns</loc>
+		<priority>0.8</priority>
+	</url>
+	<url>
+		<loc>https://amv-makaria.de/veranstaltungen</loc>
+		<priority>0.8</priority>
+	</url>
+	<url>
+		<loc>https://amv-makaria.de/wohnen</loc>
+		<priority>0.8</priority>
+	</url>
+	<url>
+		<loc>https://amv-makaria.de/kontakt</loc>
+		<priority>0.8</priority>
+	</url>
+	<url>
+		<loc>https://amv-makaria.de/impressum</loc>
+		<priority>0.2</priority>
+	</url>
+	<url>
+		<loc>https://amv-makaria.de/datenschutz</loc>
+		<priority>0.2</priority>
+	</url>
+</urlset>
