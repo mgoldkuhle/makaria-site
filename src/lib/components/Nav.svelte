@@ -3,67 +3,83 @@
 	import { page } from '$app/state';
 	import Crest from './Crest.svelte';
 
-	let open = $state(false);
-
-	const links = [
-		{ href: '/ueber-uns', label: 'Über uns' },
-		{ href: '/veranstaltungen', label: 'Veranstaltungen' },
-		{ href: '/wohnen', label: 'Wohnen' },
-		{ href: '/kontakt', label: 'Kontakt' }
-	] as const;
+	// Only two content pages remain, so the header carries a toggle to the other
+	// one instead of a menu. resolve() is called with literals on both branches —
+	// it cannot be given a variable and still be statically checked.
+	const onEvents = $derived(page.route.id === '/veranstaltungen');
 </script>
 
-<header class="relative">
-	<div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-		<a href={resolve('/')} class="flex items-center gap-3">
-			<span class="h-9 w-9 shrink-0"><Crest size="mark" /></span>
-			<span class="flex flex-col leading-tight">
-				<span class="font-display text-lg font-bold">AMV Makaria Bonn</span>
-				<span class="font-hand text-sm text-muted">musik, ausdruck, freundschaft</span>
+<header class="sticky top-0 z-40 border-b-3 border-ink bg-paper">
+	<div class="mx-auto flex h-20 max-w-[88rem] items-center justify-between px-6 sm:px-8 lg:px-12">
+		<!-- Lockup proportions follow the template: crest ~2x the wordmark size,
+		     sub-line ~0.75x it, 10px gap, 1.05 line-height between the two lines. -->
+		<a href={resolve('/')} class="flex items-center gap-2.5">
+			<Crest class="h-12 w-12 shrink-0" />
+			<span class="flex flex-col leading-[1.05]">
+				<span
+					class="wordmark font-display text-2xl leading-[1.05] font-bold tracking-[-0.02em] uppercase"
+					>Makaria</span
+				>
+				<span class="font-hand text-lg leading-[1.05] font-bold text-blue">est. 1878</span>
 			</span>
 		</a>
-		<button
-			class="flex items-center gap-2 rounded-full bg-red px-4 py-2 text-sm font-bold text-white"
-			aria-expanded={open}
-			aria-controls="mobile-nav"
-			onclick={() => (open = !open)}
+		<!-- Below sm the label plus arrow overflows a phone header alongside the
+		     wordmark, so it collapses to a single icon. aria-label carries the
+		     name at every size, since there is no visible text on small screens. -->
+		<a
+			href={onEvents ? resolve('/') : resolve('/veranstaltungen')}
+			aria-label={onEvents ? 'Zur Startseite' : 'Zu den Veranstaltungen'}
+			class="hard hard-press flex items-center gap-2 rounded-full bg-red p-3 text-white sm:px-5 sm:py-2.5"
 		>
-			<span class="flex flex-col gap-[3px]">
-				<span
-					class="h-[2px] w-4 bg-white transition-transform duration-200"
-					class:translate-y-[5px]={open}
-					class:rotate-45={open}
-				></span>
-				<span class="h-[2px] w-4 bg-white transition-opacity duration-200" class:opacity-0={open}
-				></span>
-				<span
-					class="h-[2px] w-4 bg-white transition-transform duration-200"
-					class:-translate-y-[5px]={open}
-					class:-rotate-45={open}
-				></span>
-			</span>
-			Menü
-		</button>
-	</div>
-	<div
-		id="mobile-nav"
-		class="overflow-hidden transition-[max-height] duration-300"
-		style="max-height: {open ? '220px' : '0px'}"
-	>
-		<nav class="mx-auto grid max-w-5xl grid-cols-2 gap-2 px-4 pt-1 pb-6 sm:flex sm:gap-8">
-			{#each links as link (link.href)}
-				{@const current = page.url.pathname === link.href}
-				<a
-					href={resolve(link.href)}
-					class="w-fit font-display text-lg font-bold hover:text-red {current
-						? 'text-red underline decoration-red decoration-wavy underline-offset-4'
-						: ''}"
-					aria-current={current ? 'page' : undefined}
-					onclick={() => (open = false)}>{link.label}</a
+			{#if onEvents}
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					class="h-5 w-5 sm:hidden"
+					aria-hidden="true"
 				>
-			{/each}
-		</nav>
+					<path d="M3 11.2 12 4l9 7.2" stroke-linecap="round" stroke-linejoin="round" />
+					<path d="M5.5 9.8V20h13V9.8" stroke-linecap="round" stroke-linejoin="round" />
+				</svg>
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.5"
+					class="hidden h-4 w-4 sm:block"
+					aria-hidden="true"
+				>
+					<path d="M19 12H5M11 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round" />
+				</svg>
+				<span class="hidden font-display text-sm font-bold uppercase sm:inline">Start</span>
+			{:else}
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					class="h-5 w-5 sm:hidden"
+					aria-hidden="true"
+				>
+					<rect x="3.5" y="5" width="17" height="15.5" rx="2" />
+					<path d="M8 3.2v3.6M16 3.2v3.6M3.5 10h17" stroke-linecap="round" />
+				</svg>
+				<span class="hidden font-display text-sm font-bold uppercase sm:inline"
+					>Veranstaltungen</span
+				>
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.5"
+					class="hidden h-4 w-4 sm:block"
+					aria-hidden="true"
+				>
+					<path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+				</svg>
+			{/if}
+		</a>
 	</div>
-	<!-- das Band: the blue/white/red ribbon closes off the header on every page -->
-	<div class="band-h h-1" aria-hidden="true"></div>
 </header>

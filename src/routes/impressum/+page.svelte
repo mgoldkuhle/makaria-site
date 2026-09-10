@@ -4,7 +4,7 @@
 
 <Seo title="Impressum" description="Impressum und Haftungsausschluss der AMV Makaria Bonn." />
 
-<section class="mx-auto prose max-w-3xl px-4 py-16 sm:py-20">
+<section class="mx-auto prose max-w-3xl px-4 py-20 sm:py-28">
 	<span class="section-mark not-prose" aria-hidden="true"></span>
 	<h1>Impressum / Rechtsausschluss</h1>
 

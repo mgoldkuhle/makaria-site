@@ -8,5 +8,5 @@ export const site = {
 
 /** Builds the browser/tab title: "Wohnen · AMV Makaria Bonn", or just the site name on the homepage. */
 export function pageTitle(title?: string) {
-	return title ? `${title} · ${site.name}` : `${site.name} — musik, ausdruck, freundschaft`;
+	return title ? `${title} · ${site.name}` : `${site.name}: Musik, Haus und Bühne seit 1878`;
 }

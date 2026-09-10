@@ -1,216 +1,578 @@
 <script lang="ts">
 	import { resolve, asset } from '$app/paths';
-	import Crest from '$lib/components/Crest.svelte';
 	import Lightbox from '$lib/components/Lightbox.svelte';
+	import MailtoLink from '$lib/components/MailtoLink.svelte';
 	import Seo from '$lib/components/Seo.svelte';
+	import { reveal } from '$lib/actions/reveal';
+	import { onMount } from 'svelte';
+	import {
+		eventImageUrl,
+		fetchEvents,
+		fetchUpcomingEvents,
+		formatEventDate,
+		isSupabaseConfigured,
+		landingFromLocal,
+		placeholderEvents,
+		selectLandingEvents,
+		weeklyLine
+	} from '$lib/data/events';
 
-	const highlights = [
+	// Same rules as the live path, applied to the placeholders, so the page
+	// shows a sensible selection before the table exists.
+	let landing = $state(landingFromLocal(placeholderEvents));
+
+	onMount(async () => {
+		mounted = true;
+		if (!isSupabaseConfigured) return;
+		try {
+			const upcoming = (await fetchUpcomingEvents()) ?? [];
+			// The newest list is only needed when there aren't enough upcoming
+			// ones, so it costs a second request only in that case.
+			const enough = upcoming.filter((event) => !event.labels.includes('Intern')).length >= 3;
+			const newest = enough ? [] : ((await fetchEvents()) ?? []);
+			landing = selectLandingEvents(upcoming, newest);
+		} catch (error) {
+			console.error('[events] Laden fehlgeschlagen, zeige Platzhalter:', error);
+		}
+	});
+
+	const pillars = [
 		{
-			href: '/ueber-uns',
-			title: 'Über uns',
-			text: 'Wer wir sind - und wer nicht.',
-			tint: 'bg-blue'
+			title: 'Musik im Mittelpunkt',
+			text: 'Band, Theater, Kammermusik und wer sonst noch abends am Flügel sitzt. Du musst nichts können, hier castet Dich niemand.',
+			shadow: 'hard-blue'
 		},
 		{
-			href: '/veranstaltungen',
-			title: 'Veranstaltungen',
-			text: 'Konzerte, Theater und vieles mehr.',
-			tint: 'bg-blue'
+			title: 'Ein Treffpunkt',
+			text: 'Zusammen Musik machen, zusammen abhängen, zusammen kochen. Und dabei einfach so sein, wie Du bist.',
+			shadow: 'hard-red'
 		},
 		{
-			href: '/wohnen',
-			title: 'Wohnen',
-			text: '7 Zimmer, Konzertsaal und Bandraum im Altbau mitten in der Bonner Südstadt.',
-			tint: 'bg-blue'
-		},
-		{
-			href: '/kontakt',
-			title: 'Kontakt',
-			text: 'Schreib uns, komm vorbei, lern uns kennen.',
-			tint: 'bg-blue'
+			title: 'Nicht so eine Verbindung',
+			text: 'Wir sind gemischt, nicht schlagend und nicht farbentragend. Kein Saufzwang, kein rechtes Gedankengut, und mitmachen kann jede und jeder.',
+			shadow: 'hard-gold'
 		}
 	] as const;
 
-	const gallery = [
-		{ src: '/img/fassade.jpg', alt: 'Der komplette Giebel der Fassade' },
-		{ src: '/img/hauswand.jpg', alt: 'Efeubewachsenes Fenster mit kleinen Wappen im Glas' },
+	// Carried over from the Wohnen page, which folded into this section.
+	const rooms = [
 		{
-			src: '/img/live_in_der_makaria_2.jpg',
-			alt: 'Bassist im Bühnenlicht bei Live in der Makaria'
+			title: 'Der Altbau',
+			text: 'Unser Haus steht seit 1906 am Bonner Talweg 60, mitten in der Südstadt. Sieben Zimmer für Studierende, unabhängig von Geschlecht, Herkunft und Ausrichtung.',
+			image: '/img/fassade.jpg',
+			alt: 'Der komplette Giebel der Fassade',
+			bg: 'bg-blue',
+			fg: 'text-ink',
+			fgMuted: 'text-ink/75'
 		},
-		{ src: '/img/open-mic.jpg', alt: 'Auftritt bei der Open-Mic-Night im Wohnzimmer' },
-		{ src: '/img/unplugged_woziko.jpg', alt: 'Publikum bei WoZiKo unplugged im Wohnzimmer' },
-		{ src: '/img/konzertsaal.jpg', alt: 'Hände am Flügel im Konzertsaal' },
-		{ src: '/img/stiftungsfest.jpg', alt: 'Festlich gedeckte Tafel zum Stiftungsfest' },
-		{ src: '/img/garten.jpg', alt: 'Blumenbeete im Garten' }
+		{
+			title: 'Der Konzertsaal',
+			text: 'Ein Flügel, gute Akustik und viel Platz für Ensembles, Theater und unsere Feste. Der Kneipsaal liegt gleich nebenan, für die Party danach.',
+			image: '/img/konzertsaal.jpg',
+			alt: 'Hände am Flügel im Konzertsaal',
+			bg: 'bg-blue',
+			fg: 'text-ink',
+			fgMuted: 'text-ink/75'
+		},
+		{
+			title: 'Der Jazzkeller',
+			text: 'Unser Proberaum im Keller, mit Verstärkern, Schlagzeug und allem, was sonst noch dazugehört. Hier proben die Bands aus dem Haus und von Freunden, hier wird gejammt und aufgenommen.',
+			image: '/img/jazzkeller.jpg',
+			alt: 'Bandprobe im Jazzkeller',
+			bg: 'bg-blue',
+			fg: 'text-ink',
+			fgMuted: 'text-ink/75'
+		},
+		{
+			title: 'Der Garten',
+			text: 'Blumenbeete, Lichterketten und genug Platz zum Faulenzen und Sonnenbaden. 15 Meter darüber liegt unsere Dachterrasse.',
+			image: '/img/garten.jpg',
+			alt: 'Blumenbeete im Garten',
+			bg: 'bg-blue',
+			fg: 'text-ink',
+			fgMuted: 'text-ink/75'
+		}
+	] as const;
+
+	// Carousel media, video first. Photos keep their own alt text; the video
+	// shows a local poster until it is the active slide, so YouTube is only
+	// contacted once someone actually opens it.
+	type Slide =
+		| { kind: 'video'; src: string; poster: string; label: string }
+		| { kind: 'photo'; src: string; alt: string };
+
+	const slides: Slide[] = [
+		{
+			kind: 'video',
+			src: 'https://www.youtube-nocookie.com/embed/ZQ7JnpB5FMM',
+			poster: '/img/live_in_der_makaria.jpg',
+			label: 'Video: AMV Makaria Bonn'
+		},
+		{ kind: 'photo', src: '/img/fassade.jpg', alt: 'Der komplette Giebel der Fassade' },
+		{
+			kind: 'photo',
+			src: '/img/hauswand.jpg',
+			alt: 'Efeubewachsenes Fenster mit kleinen Wappen im Glas'
+		},
+		{
+			kind: 'photo',
+			src: '/img/open-mic.jpg',
+			alt: 'Auftritt bei der Open-Mic-Night im Wohnzimmer'
+		},
+		{
+			kind: 'photo',
+			src: '/img/unplugged_woziko.jpg',
+			alt: 'Publikum bei WoZiKo unplugged im Wohnzimmer'
+		},
+		{ kind: 'photo', src: '/img/konzertsaal.jpg', alt: 'Hände am Flügel im Konzertsaal' },
+		{
+			kind: 'photo',
+			src: '/img/stiftungsfest.jpg',
+			alt: 'Festlich gedeckte Tafel zum Stiftungsfest'
+		},
+		{ kind: 'photo', src: '/img/garten.jpg', alt: 'Blumenbeete im Garten' }
 	];
 
-	let galleryEl: HTMLDivElement | undefined = $state();
-	let lightboxImage: { src: string; alt: string } | null = $state(null);
+	const photos = slides.filter(
+		(slide): slide is Extract<Slide, { kind: 'photo' }> => slide.kind === 'photo'
+	);
 
-	function scrollGallery(dir: 1 | -1) {
-		galleryEl?.scrollBy({ left: dir * 320, behavior: 'smooth' });
+	// Gates the YouTube iframe. Without this the prerendered HTML ships a live
+	// embed, which browsers load even inside a display:none block — so a JS-less
+	// visitor would silently hit YouTube for a carousel they cannot use.
+	let mounted = $state(false);
+
+	let active = $state(0);
+	let slideEls: (HTMLElement | undefined)[] = $state([]);
+	// Index into `slides`, not a copy of the image: the lightbox needs its
+	// position in the list to step to the next photo.
+	let lightboxIndex: number | null = $state(null);
+
+	// Narrow to a photo here rather than in the template, so the markup can use
+	// .alt without a second type guard.
+	const lightboxPhoto = $derived.by(() => {
+		if (lightboxIndex === null) return null;
+		const slide = slides[lightboxIndex];
+		return slide.kind === 'photo' ? slide : null;
+	});
+
+	// Steps to the next/previous photo, skipping the video. Also moves the
+	// carousel behind, so closing the lightbox leaves it where you left off.
+	function stepLightbox(dir: 1 | -1) {
+		if (lightboxIndex === null) return;
+		let i = lightboxIndex;
+		do {
+			i = (i + dir + slides.length) % slides.length;
+		} while (slides[i].kind !== 'photo' && i !== lightboxIndex);
+		lightboxIndex = i;
+		active = i;
 	}
+
+	function go(dir: 1 | -1) {
+		active = (active + dir + slides.length) % slides.length;
+	}
+
+	// Only scroll in response to a change of slide, never on mount — an
+	// unconditional scrollIntoView here would yank the viewport to the
+	// carousel as soon as the page loads.
+	let settled = false;
+	$effect(() => {
+		const el = slideEls[active];
+		if (!settled) {
+			settled = true;
+			return;
+		}
+		el?.scrollIntoView({
+			behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+			inline: 'center',
+			block: 'nearest'
+		});
+	});
 </script>
 
 <Seo
 	description="Die AMV Makaria Bonn ist eine gemischte, nicht schlagende und nicht farbentragende Studentenverbindung in der Bonner Südstadt: Konzerte, Theater, Jazzkeller, Konzertsaal mit Flügel und sieben Zimmer im Altbau."
 />
 
+{#snippet allEventsLink()}
+	<a
+		href={resolve('/veranstaltungen')}
+		class="hard hard-press rounded-2xl bg-paper px-5 py-3 font-display font-bold uppercase"
+		>Alle Termine</a
+	>
+{/snippet}
+
+<!-- Hero ------------------------------------------------------------------->
 <section
-	class="relative overflow-hidden"
-	style="background: linear-gradient(51deg, var(--color-blue) 0%, var(--color-red) 100%)"
+	class="scanlines relative flex min-h-[calc(100svh-var(--header-h))] items-center overflow-hidden"
+	style="background: linear-gradient(129deg, var(--color-blue) 0%, var(--color-red) 100%)"
 >
 	<div
-		class="mx-auto grid max-w-5xl grid-cols-1 items-center gap-10 px-4 py-16 sm:py-24 md:grid-cols-2"
+		class="relative mx-auto grid w-full max-w-[88rem] gap-12 px-6 py-20 sm:px-8 sm:py-24 md:grid-cols-[1.05fr_0.95fr] lg:gap-20 lg:px-12"
 	>
-		<div>
+		<!-- Three blocks with justify-between: equal gaps put the tile midway
+		     between headline and buttons. The md:pt-10 starts the headline below
+		     the top edge of the photo opposite, and takes that much slack out of
+		     the two gaps at the same time. -->
+		<div class="flex flex-col items-start justify-between gap-6 md:pt-10">
 			<h1
-				class="-rotate-2 font-hand text-4xl font-bold text-white sm:text-5xl"
-				style="text-shadow: 0 1px 0 rgba(0,0,0,.25), 0 10px 24px rgba(0,0,0,.3)"
+				class="type-pop-layered font-display text-5xl leading-[0.92] font-bold tracking-[-0.03em] text-white uppercase sm:text-6xl lg:text-7xl xl:text-8xl"
 			>
-				<span class="relative inline-block">
-					musik, ausdruck, freundschaft
-					<span class="absolute right-[6%] -bottom-2 left-[3%] h-1 rotate-1 rounded bg-white/80"
-					></span>
-				</span>
+				Ein Haus<br />voller Musik
 			</h1>
-			<p
-				class="mt-6 max-w-[38ch] text-lg text-white"
-				style="text-shadow: 0 2px 8px rgba(0,0,0,.25)"
+			<p class="hard max-w-[46ch] bg-paper p-5 text-lg leading-relaxed font-medium">
+				Uns gibt es seit 1878, das Haus am Bonner Talweg seit 1906. Wir sind rund 20 Leute, die hier
+				zusammen Konzerte spielen, Theater machen, im Garten sitzen und zum Teil auch wohnen.
+			</p>
+			<div class="flex flex-wrap items-center gap-3">
+				<a
+					href={resolve('/veranstaltungen')}
+					class="hard hard-press rounded-2xl bg-red px-6 py-4 font-display text-lg font-bold text-white uppercase"
+					>Veranstaltungen</a
+				>
+				<a
+					href="#wohnen"
+					class="hard hard-press rounded-2xl bg-paper px-6 py-4 font-display text-lg font-bold uppercase"
+					>Zimmer ansehen</a
+				>
+			</div>
+		</div>
+
+		<!-- Image cluster: one large frame over two smaller ones, each with a
+		     solid caption bar, closed off by the next-event strip. -->
+		<div class="flex flex-col gap-5">
+			<div class="hard relative h-72 overflow-hidden rounded-2xl sm:h-80 lg:h-96">
+				<img
+					src={asset('/img/live_in_der_makaria_2.jpg')}
+					alt="Bassist im Bühnenlicht bei Live in der Makaria"
+					class="h-full w-full object-cover"
+				/>
+				<span
+					class="blink absolute top-3 left-3 rounded-md bg-red px-2.5 py-1 text-xs font-bold tracking-[0.08em] text-white uppercase"
+					>● Live</span
+				>
+				<span class="caption-bar bg-blue">Live in der Makaria</span>
+			</div>
+			<div class="grid grid-cols-2 gap-5 lg:gap-6">
+				<div class="hard relative h-44 overflow-hidden rounded-2xl lg:h-52">
+					<img
+						src={asset('/img/jazzkeller.jpg')}
+						alt="Bandprobe im Jazzkeller"
+						loading="lazy"
+						class="h-full w-full object-cover"
+					/>
+					<span class="caption-bar bg-gold">Jazzkeller</span>
+				</div>
+				<div class="hard relative h-44 overflow-hidden rounded-2xl lg:h-52">
+					<img
+						src={asset('/img/konzertsaal.jpg')}
+						alt="Hände am Flügel im Konzertsaal"
+						loading="lazy"
+						class="h-full w-full object-cover"
+					/>
+					<span class="caption-bar bg-red text-white">Konzertsaal</span>
+				</div>
+			</div>
+			<a
+				href={resolve('/veranstaltungen')}
+				data-js-only
+				class="hard hard-press flex items-center justify-between gap-3 rounded-2xl bg-paper p-4"
 			>
-				Eine Verbindung aus Musik, einem Altbau in der Bonner Südstadt und viel guter Laune.
-			</p>
-		</div>
-		<div class="mx-auto flex w-full max-w-[300px] items-center justify-center">
-			<Crest />
+				<span class="flex flex-col">
+					<span class="text-xs font-bold tracking-[0.1em] text-muted uppercase">Nächstes Event</span
+					>
+					<span class="font-display text-lg font-bold"
+						>{landing.next?.title ?? 'Programm ansehen'}</span
+					>
+				</span>
+				<span class="shrink-0 rounded-full bg-gold px-3 py-1.5 text-sm font-bold text-ink"
+					>{landing.next ? formatEventDate(landing.next) : 'Alle Termine'}</span
+				>
+			</a>
+
+			<noscript>
+				<a
+					href={resolve('/veranstaltungen')}
+					class="hard flex items-center justify-between gap-3 rounded-2xl bg-paper p-4"
+				>
+					<span class="flex flex-col">
+						<span class="text-xs font-bold tracking-[0.1em] text-muted uppercase">Programm</span>
+						<span class="font-display text-lg font-bold">Alle Termine ansehen</span>
+					</span>
+					<span
+						class="flex shrink-0 items-center rounded-full bg-gold px-3 py-1.5 text-ink"
+						aria-hidden="true"
+					>
+						<svg
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.5"
+							class="h-4 w-4"
+						>
+							<path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+						</svg>
+					</span>
+				</a>
+			</noscript>
 		</div>
 	</div>
 </section>
 
-<section class="mx-auto max-w-5xl px-4 py-16 sm:py-20">
-	<div class="grid grid-cols-1 items-center gap-10 md:grid-cols-2">
-		<div>
-			<span class="section-mark" aria-hidden="true"></span>
-			<h2 class="font-display text-3xl font-bold sm:text-4xl">Bunt Gemischt.</h2>
-			<p class="mt-3 text-muted">
-				Rund 20 Aktive, die für Konzerte, Theater, Filmabende, Jammen oder zum Entspannen im Garten
-				zusammen kommen. Ob selbst kunstschaffend, an der Tontechnik oder nur zum Zuhören: bei uns
-				bist Du
-				<span class="align-middle font-hand text-2xl font-bold text-red">herzlich willkommen.</span>
-			</p>
-		</div>
-		<div class="aspect-video w-full overflow-hidden border border-border">
-			<iframe
-				title="Video: AMV Makaria Bonn"
-				src="https://www.youtube-nocookie.com/embed/ZQ7JnpB5FMM"
-				width="100%"
-				height="100%"
-				loading="lazy"
-				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-				allowfullscreen
-			></iframe>
-		</div>
+<!-- What we are ------------------------------------------------------------>
+<section class="mx-auto max-w-[88rem] px-6 py-20 sm:px-8 sm:py-28 lg:px-12">
+	<span class="section-mark bg-blue" aria-hidden="true"></span>
+	<h2 class="type-pop font-display text-3xl font-bold uppercase sm:text-5xl lg:text-6xl">
+		Das sind wir
+	</h2>
+
+	<div use:reveal class="mt-12 grid gap-8 sm:grid-cols-3 lg:gap-10">
+		{#each pillars as pillar (pillar.title)}
+			<div class="hard {pillar.shadow} rounded-2xl bg-paper p-6">
+				<h3 class="font-display text-xl font-bold">{pillar.title}</h3>
+				<p class="mt-3 leading-relaxed text-muted">{pillar.text}</p>
+			</div>
+		{/each}
 	</div>
 </section>
 
-<section
-	class="relative overflow-hidden"
-	style="background: linear-gradient(51deg, var(--color-red) 0%, var(--color-blue) 100%)"
->
-	<div class="py-16 sm:py-20">
-		<div class="mx-auto max-w-5xl px-4">
-			<span class="section-mark section-mark--on-color" aria-hidden="true"></span>
+<!-- Events ----------------------------------------------------------------->
+<section class="border-y-3 border-ink bg-blue">
+	<div class="mx-auto max-w-[88rem] px-6 py-20 sm:px-8 sm:py-28 lg:px-12">
+		<div class="flex flex-wrap items-end justify-between gap-4">
+			<div>
+				<span class="section-mark bg-white" aria-hidden="true"></span>
+				<h2
+					class="type-pop-ink font-display text-3xl font-bold text-white uppercase sm:text-5xl lg:text-6xl"
+				>
+					Das steht an
+				</h2>
+			</div>
+			<!-- beside the heading from sm up; below the cards on phones, where a
+			     button next to the heading would wrap onto its own cramped line -->
+			<div class="hidden sm:block">{@render allEventsLink()}</div>
+		</div>
+
+		<div use:reveal data-js-only class="mt-12 grid gap-8 sm:grid-cols-3 lg:gap-10">
+			{#each landing.highlights as event (event.id)}
+				<article class="hard overflow-hidden rounded-2xl bg-paper">
+					<img
+						src={eventImageUrl(event.image)}
+						alt={event.imageAlt ?? ''}
+						loading="lazy"
+						class="aspect-video w-full border-b-3 border-ink object-cover"
+					/>
+					<div class="p-5">
+						<p class="text-xs font-bold tracking-[0.1em] text-red uppercase">
+							{formatEventDate(event)}
+						</p>
+						<h3 class="mt-1 font-display text-xl font-bold">{event.title}</h3>
+					</div>
+				</article>
+			{/each}
+		</div>
+
+		<div class="hard mt-8 rounded-2xl bg-paper p-6 text-center">
+			<p class="font-display text-lg font-bold sm:text-xl">
+				{weeklyLine}
+			</p>
+		</div>
+
+		<div class="mt-10 flex justify-center sm:hidden">{@render allEventsLink()}</div>
+	</div>
+</section>
+
+<!-- Living ----------------------------------------------------------------->
+<section id="wohnen" class="mx-auto max-w-[88rem] px-6 py-20 sm:px-8 sm:py-28 lg:px-12">
+	<span class="section-mark bg-blue" aria-hidden="true"></span>
+	<h2 class="type-pop font-display text-3xl font-bold uppercase sm:text-5xl lg:text-6xl">Die WG</h2>
+	<p class="mt-4 max-w-[46ch] leading-relaxed text-muted">
+		Ein Altbau von 1906 mitten in der Bonner Südstadt, vier Minuten zur Unibibliothek. Weil das Haus
+		uns selbst gehört, liegt die Miete deutlich unter dem Bonner Marktpreis.
+	</p>
+
+	<div use:reveal class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+		{#each rooms as room (room.title)}
+			<div class="hard overflow-hidden rounded-2xl {room.bg}">
+				<img
+					src={asset(room.image)}
+					alt={room.alt}
+					loading="lazy"
+					class="h-44 w-full border-b-3 border-ink object-cover"
+				/>
+				<div class="p-5">
+					<h3 class="font-display text-xl font-bold {room.fg}">{room.title}</h3>
+					<p class="mt-2 text-sm leading-relaxed {room.fgMuted}">{room.text}</p>
+				</div>
+			</div>
+		{/each}
+	</div>
+</section>
+
+<!-- Gallery ---------------------------------------------------------------->
+<section class="scanlines relative overflow-hidden border-y-3 border-ink bg-red">
+	<div class="relative py-20 sm:py-28">
+		<div class="mx-auto max-w-[88rem] px-6 sm:px-8 lg:px-12">
+			<span class="section-mark bg-white" aria-hidden="true"></span>
 			<h2
-				class="font-display text-3xl font-bold text-white sm:text-4xl"
-				style="text-shadow: 0 2px 12px rgba(0,0,0,.25)"
+				class="type-pop-ink font-display text-3xl font-bold text-white uppercase sm:text-5xl lg:text-6xl"
 			>
-				Ein paar Eindrücke aus dem Makarenhaus.
+				Galerie
 			</h2>
 		</div>
 
-		<div class="relative mt-8">
-			<!-- runs off the right edge of the viewport: reads as "there is more", and
-			     stops the carousel sitting in a polite centred box -->
-			<div
-				bind:this={galleryEl}
-				class="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pr-4 pb-2 pl-[max(1rem,calc((100vw-64rem)/2))]"
-			>
-				{#each gallery as image (image.src)}
-					<button
-						type="button"
-						class="shrink-0 snap-center"
-						onclick={() => (lightboxImage = image)}
-						aria-label="Foto vergrößern: {image.alt}"
-					>
-						<img
-							src={asset(image.src)}
-							alt={image.alt}
+		<!-- One row, one enlarged slide. The row scrolls the active slide to
+		     centre; the strip runs past both edges so it reads as continuing. -->
+		<div
+			data-js-only
+			class="no-scrollbar mt-10 flex h-[17rem] gap-4 overflow-x-auto px-6 pt-4 pb-8 sm:h-[21rem] sm:px-8 lg:h-[27rem] lg:px-12"
+		>
+			{#each slides as slide, i (slide.src)}
+				{@const current = i === active}
+				<div
+					bind:this={slideEls[i]}
+					class="hard slide relative h-full shrink-0 overflow-hidden rounded-2xl {current
+						? 'w-[24.9rem] sm:w-[32rem] lg:w-[42.67rem]'
+						: 'slide-lift w-16 sm:w-24 lg:w-28'}"
+				>
+					{#if slide.kind === 'video' && current && mounted}
+						<iframe
+							title={slide.label}
+							src={slide.src}
+							width="100%"
+							height="100%"
 							loading="lazy"
-							class="aspect-[4/3] w-64 object-cover shadow-lg transition hover:opacity-90 sm:w-72"
-						/>
-					</button>
-				{/each}
-			</div>
-			<div class="mx-auto mt-6 flex max-w-5xl gap-3 px-4">
-				<button
-					type="button"
-					aria-label="Zurück"
-					class="flex h-9 w-9 items-center justify-center rounded-full border border-white/50 text-white hover:bg-white/10"
-					onclick={() => scrollGallery(-1)}
-				>
-					<svg
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						class="h-4 w-4"
-						><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" /></svg
-					>
-				</button>
-				<button
-					type="button"
-					aria-label="Weiter"
-					class="flex h-9 w-9 items-center justify-center rounded-full border border-white/50 text-white hover:bg-white/10"
-					onclick={() => scrollGallery(1)}
-				>
-					<svg
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						class="h-4 w-4"
-						><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" /></svg
-					>
-				</button>
-			</div>
-		</div>
-	</div>
-</section>
-
-<section>
-	<div class="mx-auto max-w-5xl px-4 py-16 sm:py-20">
-		<span class="section-mark" aria-hidden="true"></span>
-		<h2 class="font-display text-3xl font-bold sm:text-4xl">Hier gehts weiter.</h2>
-
-		<div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-			{#each highlights as item (item.href)}
-				<a
-					href={resolve(item.href)}
-					class="band-wipe {item.tint} p-6 pb-8 text-white transition-colors hover:bg-ink"
-				>
-					<h3 class="font-display font-bold">{item.title}</h3>
-					<p class="mt-2 text-sm text-white/80">{item.text}</p>
-				</a>
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+							allowfullscreen
+						></iframe>
+					{:else}
+						<button
+							type="button"
+							class="block h-full w-full cursor-pointer"
+							onclick={() =>
+								current && slide.kind === 'photo' ? (lightboxIndex = i) : (active = i)}
+							aria-label={slide.kind === 'video'
+								? 'Video abspielen'
+								: current
+									? `Foto vergrößern: ${slide.alt}`
+									: `Anzeigen: ${slide.alt}`}
+						>
+							<img
+								src={asset(slide.kind === 'video' ? slide.poster : slide.src)}
+								alt={slide.kind === 'video' ? '' : slide.alt}
+								loading="lazy"
+								class="h-full w-full object-cover"
+							/>
+							{#if slide.kind === 'video'}
+								<span
+									class="absolute inset-0 flex items-center justify-center bg-ink/45 text-white"
+								>
+									<svg viewBox="0 0 24 24" fill="currentColor" class="h-8 w-8 lg:h-12 lg:w-12"
+										><path d="M8 5v14l11-7z" /></svg
+									>
+								</span>
+							{/if}
+						</button>
+					{/if}
+				</div>
 			{/each}
 		</div>
+
+		<div
+			data-js-only
+			class="mx-auto mt-6 flex max-w-[88rem] items-center gap-3 px-6 sm:px-8 lg:px-12"
+		>
+			<button
+				type="button"
+				aria-label="Vorheriges Medium"
+				class="hard hard-press flex h-10 w-10 items-center justify-center rounded-full bg-paper"
+				onclick={() => go(-1)}
+			>
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.5"
+					class="h-4 w-4"
+					><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" /></svg
+				>
+			</button>
+			<button
+				type="button"
+				aria-label="Nächstes Medium"
+				class="hard hard-press flex h-10 w-10 items-center justify-center rounded-full bg-paper"
+				onclick={() => go(1)}
+			>
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.5"
+					class="h-4 w-4"
+					><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" /></svg
+				>
+			</button>
+			<span class="ml-2 font-display text-sm font-bold text-white"
+				>{active + 1} / {slides.length}</span
+			>
+		</div>
+
+		<!-- The carousel needs JS for its arrows, its resizing slide and the
+		     lightbox, so it is replaced by a plain grid of the same photos. The
+		     video is dropped rather than embedded: it would be a dead frame. -->
+		<noscript>
+			<div
+				class="mx-auto mt-10 grid max-w-[88rem] gap-5 px-6 sm:grid-cols-2 sm:px-8 lg:grid-cols-3 lg:px-12"
+			>
+				{#each photos as photo (photo.src)}
+					<img
+						src={asset(photo.src)}
+						alt={photo.alt}
+						loading="lazy"
+						class="hard aspect-[4/3] w-full rounded-2xl object-cover"
+					/>
+				{/each}
+			</div>
+		</noscript>
 	</div>
 </section>
 
-{#if lightboxImage}
+<!-- Contact ---------------------------------------------------------------->
+<section id="kontakt" class="mx-auto max-w-[88rem] px-6 py-20 sm:px-8 sm:py-28 lg:px-12">
+	<div class="hard hard-blue grid gap-10 rounded-2xl bg-paper p-8 sm:p-12 md:grid-cols-2">
+		<div>
+			<span class="section-mark bg-blue" aria-hidden="true"></span>
+			<h2 class="font-display text-3xl font-bold uppercase sm:text-4xl">Schreib uns</h2>
+			<p class="mt-4 max-w-[38ch] leading-relaxed text-muted">
+				Ein Satz reicht, egal ob Du ein Zimmer suchst oder einfach zum Konzert kommen willst.
+				Donnerstags ab 20 Uhr steht die Tür sowieso offen.
+			</p>
+		</div>
+		<div class="flex flex-col items-start justify-center gap-5">
+			<p class="font-display text-2xl leading-tight font-bold text-blue">
+				Bonner Talweg 60<br />53113 Bonn
+			</p>
+			<div class="flex flex-wrap gap-3">
+				<MailtoLink
+					class="hard hard-press rounded-2xl bg-red px-5 py-3 font-display font-bold text-white uppercase"
+				/>
+				<a
+					href="https://www.instagram.com/makariabonn/"
+					rel="external"
+					class="hard hard-press rounded-2xl bg-paper px-5 py-3 font-display font-bold uppercase"
+					>Instagram</a
+				>
+			</div>
+		</div>
+	</div>
+</section>
+
+{#if lightboxPhoto}
 	<Lightbox
-		src={asset(lightboxImage.src)}
-		alt={lightboxImage.alt}
-		onClose={() => (lightboxImage = null)}
+		src={asset(lightboxPhoto.src)}
+		alt={lightboxPhoto.alt}
+		onClose={() => (lightboxIndex = null)}
+		onPrev={() => stepLightbox(-1)}
+		onNext={() => stepLightbox(1)}
 	/>
 {/if}

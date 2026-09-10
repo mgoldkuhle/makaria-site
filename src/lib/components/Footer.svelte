@@ -2,9 +2,10 @@
 	import { resolve } from '$app/paths';
 </script>
 
-<footer class="text-sm text-muted">
-	<div class="band-h h-1" aria-hidden="true"></div>
-	<div class="mx-auto flex max-w-5xl flex-col gap-2 px-4 pt-8 pb-10 sm:flex-row sm:justify-between">
+<footer class="border-t border-border py-8 text-sm text-muted">
+	<div
+		class="mx-auto flex max-w-[88rem] flex-col gap-2 px-6 sm:flex-row sm:justify-between sm:px-8 lg:px-12"
+	>
 		<p>AMV Makaria Bonn · Bonner Talweg 60 · 53113 Bonn</p>
 		<div class="flex items-baseline gap-4">
 			<a href={resolve('/impressum')} class="hover:text-red">Impressum</a>

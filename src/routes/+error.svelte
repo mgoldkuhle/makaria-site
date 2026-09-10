@@ -13,13 +13,15 @@
 
 <section class="mx-auto max-w-3xl px-4 py-24 text-center sm:py-32">
 	<span class="section-mark mx-auto" aria-hidden="true"></span>
-	<p class="font-display text-7xl leading-none font-bold text-blue sm:text-8xl">{page.status}</p>
+	<p class="font-display text-7xl leading-none font-bold text-red sm:text-8xl">
+		{page.status}
+	</p>
 	<h1 class="mt-6 font-display text-3xl font-bold sm:text-4xl">
-		{isNotFound ? 'Hier ist nichts.' : 'Da ist etwas schiefgelaufen.'}
+		{isNotFound ? 'Hier ist nichts' : 'Da ist etwas schiefgelaufen'}
 	</h1>
 	<p class="mt-4 text-muted">
 		{isNotFound
-			? 'Die Seite gibt es nicht — vielleicht ist der Link alt oder vertippt.'
+			? 'Die Seite gibt es nicht. Vielleicht ist der Link alt oder es hat sich ein Tippfehler eingeschlichen.'
 			: page.error?.message}
 	</p>
 	<p class="mt-8 font-hand text-3xl font-bold text-red">Aber der Rest ist noch da.</p>

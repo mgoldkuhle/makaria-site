@@ -11,7 +11,10 @@
 
 @font-face {
 	font-family: 'Syne';
-	font-weight: 700;
+	/* Variable 700-800: the wordmark uses 800, headings stay at 700. The
+	   previous file was a static 700 instance, where asking for 800 matched
+	   the same face and changed nothing. */
+	font-weight: 700 800;
 	font-style: normal;
 	font-display: swap;
 	src: url('/fonts/syne.woff2') format('woff2');
@@ -32,19 +35,33 @@
 
 	--color-paper: #ffffff;
 	--color-surface-2: #f4f6fb;
-	--color-ink: #1c2333;
-	--color-muted: #626b83;
-	--color-blue: #3457c9;
-	--color-blue-soft: #e3eafb;
-	--color-red: #d6432e;
-	--color-red-soft: #fce3de;
-	--color-gold: #ad7a1f;
-	--color-border: #1c233320;
+	/* Near-black rather than navy: the outlines and shadows are the whole
+	   look, and they snap harder the closer ink gets to black. */
+	--color-ink: #0e1015;
+	--color-muted: #5b6376;
+	/* Blue and yellow are SURFACE and dark-ground colours only: white text on
+	   them is 2.4:1 and 1.1:1, and as text on white they are just as invisible.
+	   Anything sitting on them takes ink (7.9:1 / 17.6:1); anything on white
+	   takes ink or red. */
+	--color-blue: #47aefc;
+	--color-gold: #faff00;
+	--color-red: #fd2e3d;
+	--color-border: #0e101520;
 }
 
 @layer base {
+	:root {
+		/* One source of truth for the header's height: the header sets its inner
+		   row to h-20 and adds a 3px bottom border, and the hero subtracts this
+		   from the viewport. Nothing in the header is responsive, so this holds
+		   at every width. */
+		--header-h: calc(5rem + 3px);
+	}
+
 	html {
 		scroll-behavior: smooth;
+		/* keeps #anchors clear of the floating header */
+		scroll-padding-top: calc(var(--header-h) + 1rem);
 	}
 
 	@media (prefers-reduced-motion: reduce) {
@@ -72,7 +89,7 @@
 	}
 
 	.prose :where(a):not(:where([class~='not-prose'] *)) {
-		color: var(--color-blue);
+		color: var(--color-red);
 	}
 
 	.no-scrollbar {
@@ -83,104 +100,179 @@
 		display: none;
 	}
 
-	/* ---------------------------------------------------------------
-	   Das Band — the blue/white/red ribbon of the Verbindung, used as
-	   the site's recurring structural device rather than a generic rule.
-	   --------------------------------------------------------------- */
-
-	.band-v {
-		background: linear-gradient(
-			to bottom,
-			var(--color-blue) 0 33.334%,
-			#ffffff 33.334% 66.667%,
-			var(--color-red) 66.667% 100%
-		);
-	}
-
-	.band-h {
-		background: linear-gradient(
-			to right,
-			var(--color-blue) 0 33.334%,
-			#ffffff 33.334% 66.667%,
-			var(--color-red) 66.667% 100%
-		);
-	}
-
-	/* Section opener: a short length of the Band. */
 	.section-mark {
 		display: block;
-		width: 3.25rem;
-		height: 15px;
-		margin-bottom: 1.25rem;
-		background: linear-gradient(
-			to bottom,
-			var(--color-blue) 0 33.334%,
-			#ffffff 33.334% 66.667%,
-			var(--color-red) 66.667% 100%
-		);
-		/* keeps the white centre stripe readable on a white ground */
-		outline: 1px solid var(--color-border);
-		outline-offset: 0;
+		width: 3.5rem;
+		height: 4px;
+		margin-bottom: 1rem;
+		background: var(--color-red);
+		border-radius: 3px;
 	}
 
-	/* Same Band, on a coloured/photographic ground. */
-	.section-mark--on-color {
-		outline-color: rgba(255, 255, 255, 0.65);
+	/* ---------------------------------------------------------------
+	   Poster devices, lifted from the funkier draft: hard ink outlines,
+	   solid offset shadows, tilts and layered display type. The draft
+	   got its character from these, not from the meme copy — so they
+	   carry over onto our own blue/white/red palette unchanged.
+	   --------------------------------------------------------------- */
+
+	/* Outlined block with a solid colour shadow instead of a soft blur. */
+	.hard {
+		--hard-shadow: var(--color-ink);
+		border: 3px solid var(--color-ink);
+		box-shadow: 5px 5px 0 var(--hard-shadow);
 	}
 
-	/* A hairline of Band across the top edge of a card or photo. */
-	.band-top {
-		position: relative;
+	.hard-red {
+		--hard-shadow: var(--color-red);
 	}
 
-	.band-top::before {
+	.hard-blue {
+		--hard-shadow: var(--color-blue);
+	}
+
+	.hard-gold {
+		--hard-shadow: var(--color-gold);
+	}
+
+	/* Press-in on hover: the block slides onto its own shadow.
+	   display matters: transform is ignored on non-replaced inline elements, so
+	   an <a> in a non-flex parent would keep its shadow change while refusing to
+	   move. Any Tailwind display utility (flex, block) still overrides this. */
+	.hard-press {
+		display: inline-block;
+		transition:
+			transform 0.14s ease,
+			box-shadow 0.14s ease;
+	}
+
+	.hard-press:hover,
+	.hard-press:focus-visible {
+		transform: translate(3px, 3px);
+		box-shadow: 2px 2px 0 var(--hard-shadow);
+	}
+
+	/* Display type with an offset colour ghost behind it. */
+	.type-pop {
+		text-shadow: 3px 3px 0 var(--color-blue);
+	}
+
+	.type-pop-red {
+		text-shadow: 3px 3px 0 var(--color-red);
+	}
+
+	.type-pop-ink {
+		text-shadow: 3px 3px 0 var(--color-ink);
+	}
+
+	/* For ink headings on a colour field, where an ink ghost would just smear. */
+	.type-pop-white {
+		text-shadow: 3px 3px 0 var(--color-paper);
+	}
+
+	/* Two stacked hard ghosts, as in the template's hero. White fill alone is
+	   only 2.4:1 over the blue end of the gradient; the offset ink layer is what
+	   makes it legible. */
+	.type-pop-layered {
+		text-shadow:
+			4px 4px 0 var(--color-red),
+			8px 8px 0 var(--color-ink);
+	}
+
+	/* Fine horizontal scanlines over a colour field, so big flat gradients
+	   read as printed rather than as a CSS default. */
+	.scanlines::before {
 		content: '';
 		position: absolute;
-		top: 0;
-		right: 0;
-		left: 0;
-		height: 6px;
-		z-index: 1;
-		background: linear-gradient(
-			to right,
-			var(--color-blue) 0 33.334%,
-			#ffffff 33.334% 66.667%,
-			var(--color-red) 66.667% 100%
-		);
+		inset: 0;
+		pointer-events: none;
+		background: repeating-linear-gradient(0deg, rgb(255 255 255 / 0.1) 0 2px, transparent 2px 5px);
 	}
 
-	/* Hover: a length of Band wipes across the bottom of the tile. */
-	.band-wipe {
-		position: relative;
-		overflow: hidden;
+	/* Crest halo: a wide, very transparent blue bloom. */
+	.crest-neon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		filter: drop-shadow(0 0 9px color-mix(in srgb, var(--color-blue) 35%, transparent));
 	}
 
-	.band-wipe::after {
-		content: '';
+	.crest-neon > img {
+		height: 100%;
+		width: 100%;
+		object-fit: contain;
+	}
+
+	/* Wordmark: the template's move — saturated fill, hard contrasting offset —
+	   with the roles swapped for a white ground. Its yellow-on-black can't be
+	   copied directly: on white, yellow is 1.1:1 and cyan 1.5:1, so red is the
+	   only saturated fill that holds, with ink taking the offset. */
+	.wordmark {
+		color: var(--color-red);
+		font-weight: 800;
+		text-shadow: 2px 2px 0 var(--color-blue);
+	}
+
+	/* Carousel slides: the width change is the slow, deliberate one; the hover
+	   lift is quick. Only inactive slides get .slide-lift — the enlarged one
+	   should stay put. :focus-within, not :focus-visible, because the focusable
+	   element is the button inside. */
+	.slide {
+		transition:
+			width 0.4s ease-out,
+			transform 0.18s ease;
+	}
+
+	.slide-lift:hover,
+	.slide-lift:focus-within {
+		transform: translateY(-0.5rem);
+	}
+
+	/* Blink for the LIVE badge. Still a hard step rather than a fade, so it
+	   reads as a recording light, but shallower and slower than the template's
+	   1.4s to 0.15 so it doesn't pull the eye off the hero. Lit for two thirds
+	   of the cycle, dimmed for the last third. */
+	@keyframes blink {
+		0%,
+		66% {
+			opacity: 1;
+		}
+		67%,
+		100% {
+			opacity: 0.5;
+		}
+	}
+
+	.blink {
+		animation: blink 2.4s steps(1, end) infinite;
+	}
+
+	/* Caption bar on the bottom edge of a photo. Light by default; a bg-*
+	   utility overrides it, since utilities outrank this layer. */
+	.caption-bar {
 		position: absolute;
-		right: 0;
-		bottom: 0;
-		left: 0;
-		height: 6px;
-		transform: scaleX(0);
-		transform-origin: left;
-		transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-		background: linear-gradient(
-			to right,
-			var(--color-blue) 0 33.334%,
-			#ffffff 33.334% 66.667%,
-			var(--color-red) 66.667% 100%
-		);
-	}
-
-	.band-wipe:hover::after,
-	.band-wipe:focus-visible::after {
-		transform: scaleX(1);
+		inset: auto 0 0 0;
+		padding: 0.5rem 0.75rem;
+		background: var(--color-paper);
+		color: var(--color-ink);
+		font-weight: 700;
+		font-size: 0.8125rem;
+		line-height: 1.2;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.band-wipe::after {
-			transition: none;
+		.blink {
+			animation: none;
+		}
+
+		.slide-lift:hover,
+		.slide-lift:focus-within {
+			transform: none;
+		}
+
+		.hard-press:hover,
+		.hard-press:focus-visible {
+			transform: none;
 		}
 	}
 
