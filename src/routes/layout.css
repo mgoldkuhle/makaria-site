@@ -123,6 +123,12 @@
 		box-shadow: 5px 5px 0 var(--hard-shadow);
 	}
 
+	/* Same outline, no offset shadow. Most cards use this; the shadow is
+	   reserved for buttons and the few blocks meant to sit forward. */
+	.hard-flat {
+		border: 3px solid var(--color-ink);
+	}
+
 	.hard-red {
 		--hard-shadow: var(--color-red);
 	}
@@ -211,6 +217,18 @@
 		color: var(--color-red);
 		font-weight: 800;
 		text-shadow: 2px 2px 0 var(--color-blue);
+	}
+
+	/* Emphasised word inside a heading. <mark> brings a yellow background from
+	   the user-agent stylesheet, so that is cleared. Syne has no italic cut, so
+	   the browser synthesises the slant from the upright face — which leans the
+	   tops of the letters into the following space without widening the word.
+	   The trailing margin is an italic correction that gives that space back. */
+	.pillar-mark {
+		background: transparent;
+		color: var(--color-red);
+		font-style: italic;
+		margin-inline-end: 0.12em;
 	}
 
 	/* Carousel slides: the width change is the slow, deliberate one; the hover

@@ -104,7 +104,7 @@
 	     caption bar along the bottom edge. -->
 	<div
 		role="presentation"
-		class="hard relative max-h-full overflow-hidden rounded-2xl bg-ink"
+		class="hard-flat relative max-h-full overflow-hidden rounded-2xl bg-ink"
 		onclick={(e) => e.stopPropagation()}
 		transition:scale={{ duration: dur, start: 0.94, opacity: 0, easing: backOut }}
 	>

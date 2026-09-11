@@ -6,7 +6,7 @@
 	<div
 		class="mx-auto flex max-w-[88rem] flex-col gap-2 px-6 sm:flex-row sm:justify-between sm:px-8 lg:px-12"
 	>
-		<p>AMV Makaria Bonn · Bonner Talweg 60 · 53113 Bonn</p>
+		<p>AMV&nbsp;Makaria&nbsp;Bonn · Bonner&nbsp;Talweg&nbsp;60 · 53113&nbsp;Bonn</p>
 		<div class="flex items-baseline gap-4">
 			<a href={resolve('/impressum')} class="hover:text-red">Impressum</a>
 			<a href={resolve('/datenschutz')} class="hover:text-red">Datenschutz</a>

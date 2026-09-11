@@ -39,17 +39,18 @@
 	const pillars = [
 		{
 			title: 'Musik im Mittelpunkt',
-			text: 'Band, Theater, Kammermusik und wer sonst noch abends am Flügel sitzt. Du musst nichts können, hier castet Dich niemand.',
+			text: 'Ob solo am Klavier, in einer Band, im Kammermusik-Ensemble, an der Tontechnik oder beim Tanzen. Uns alle verbindet eine Begeisterung für die Musik.',
 			shadow: 'hard-blue'
 		},
 		{
 			title: 'Ein Treffpunkt',
-			text: 'Zusammen Musik machen, zusammen abhängen, zusammen kochen. Und dabei einfach so sein, wie Du bist.',
+			text: 'Come as you are! Unser Haus am Bonner Talweg ist ein Wohlfühlort für Studierende jeder Art zum gemeinsamen Musizieren, Abhängen, Feiern und manchmal auch Studieren.',
 			shadow: 'hard-red'
 		},
 		{
 			title: 'Nicht so eine Verbindung',
-			text: 'Wir sind gemischt, nicht schlagend und nicht farbentragend. Kein Saufzwang, kein rechtes Gedankengut, und mitmachen kann jede und jeder.',
+			mark: 'so',
+			text: 'Wir sind gemischt, nicht schlagend und nicht farbentragend. Kein Saufzwang, kein rechtsextremes Gedankengut, keine Aufnahmeprüfungen.',
 			shadow: 'hard-gold'
 		}
 	] as const;
@@ -58,7 +59,7 @@
 	const rooms = [
 		{
 			title: 'Der Altbau',
-			text: 'Unser Haus steht seit 1906 am Bonner Talweg 60, mitten in der Südstadt. Sieben Zimmer für Studierende, unabhängig von Geschlecht, Herkunft und Ausrichtung.',
+			text: 'Unser Haus steht seit 1906 am Bonner\u00A0Talweg\u00A060 im Herzen der Südstadt. Sieben Zimmer für Studierende, unabhängig von Geschlecht, Herkunft oder Ausrichtung.',
 			image: '/img/fassade.jpg',
 			alt: 'Der komplette Giebel der Fassade',
 			bg: 'bg-blue',
@@ -67,7 +68,7 @@
 		},
 		{
 			title: 'Der Konzertsaal',
-			text: 'Ein Flügel, gute Akustik und viel Platz für Ensembles, Theater und unsere Feste. Der Kneipsaal liegt gleich nebenan, für die Party danach.',
+			text: 'Ein Flügel, gute Akustik und viel Platz für Ensembles, Theater und unsere Feste. Der Kneipsaal liegt gleich nebenan, für die Party danach und unsere Mitgliederversammlungen.',
 			image: '/img/konzertsaal.jpg',
 			alt: 'Hände am Flügel im Konzertsaal',
 			bg: 'bg-blue',
@@ -76,7 +77,7 @@
 		},
 		{
 			title: 'Der Jazzkeller',
-			text: 'Unser Proberaum im Keller, mit Verstärkern, Schlagzeug und allem, was sonst noch dazugehört. Hier proben die Bands aus dem Haus und von Freunden, hier wird gejammt und aufgenommen.',
+			text: 'Unser Proberaum im Keller, mit Verstärkern, Schlagzeug und allem, was sonst noch dazugehört. Hier proben die Bands der Makaria und von Freunden, hier wird gejammt und aufgenommen.',
 			image: '/img/jazzkeller.jpg',
 			alt: 'Bandprobe im Jazzkeller',
 			bg: 'bg-blue',
@@ -85,7 +86,7 @@
 		},
 		{
 			title: 'Der Garten',
-			text: 'Blumenbeete, Lichterketten und genug Platz zum Faulenzen und Sonnenbaden. 15 Meter darüber liegt unsere Dachterrasse.',
+			text: 'Blumenbeete, Lichterketten und viel Platz zum Chillen, Sonnenbaden und für gemütliche Sommerabende. 10 Meter darüber liegt unsere sonnige Dachterrasse.',
 			image: '/img/garten.jpg',
 			alt: 'Blumenbeete im Garten',
 			bg: 'bg-blue',
@@ -210,38 +211,34 @@
 	<div
 		class="relative mx-auto grid w-full max-w-[88rem] gap-12 px-6 py-20 sm:px-8 sm:py-24 md:grid-cols-[1.05fr_0.95fr] lg:gap-20 lg:px-12"
 	>
-		<!-- Three blocks with justify-between: equal gaps put the tile midway
-		     between headline and buttons. The md:pt-10 starts the headline below
-		     the top edge of the photo opposite, and takes that much slack out of
-		     the two gaps at the same time. -->
-		<div class="flex flex-col items-start justify-between gap-6 md:pt-10">
+		<!-- The column stretches to the height of the image cluster. From md up the
+		     free space is shared by three spacers in a 1 : 2 : 1 ratio — above the
+		     headline, between headline and box, below the box. The middle one keeps
+		     the gap the previous layout had (half the free space), while the outer
+		     two lift headline and box by the same amount. Being ratios, this holds
+		     at every width. Below md the columns stack and the spacers are hidden. -->
+		<div class="flex flex-col items-start gap-6 md:gap-0">
+			<div class="hidden md:block md:grow" aria-hidden="true"></div>
 			<h1
 				class="type-pop-layered font-display text-5xl leading-[0.92] font-bold tracking-[-0.03em] text-white uppercase sm:text-6xl lg:text-7xl xl:text-8xl"
 			>
 				Ein Haus<br />voller Musik
 			</h1>
+			<div class="hidden md:block md:grow-2" aria-hidden="true"></div>
 			<p class="hard max-w-[46ch] bg-paper p-5 text-lg leading-relaxed font-medium">
-				Uns gibt es seit 1878, das Haus am Bonner Talweg seit 1906. Wir sind rund 20 Leute, die hier
-				zusammen Konzerte spielen, Theater machen, im Garten sitzen und zum Teil auch wohnen.
+				Hast Du Interesse an Musik? Dann bist Du bei uns an der richtigen Adresse. Neben einem
+				„beflügelten“ Konzertsaal und unserem Jazzkeller haben wir noch viel weiteren Raum zur
+				künstlerischen Entfaltung. In unserem schönen Haus in der Bonner Südstadt kommen rund 20
+				aktive Mitglieder der AMV&nbsp;Makaria&nbsp;Bonn zusammen, musizieren gemeinsam, spielen
+				Theater und organisieren Konzerte, Filmabende und Vorträge.
 			</p>
-			<div class="flex flex-wrap items-center gap-3">
-				<a
-					href={resolve('/veranstaltungen')}
-					class="hard hard-press rounded-2xl bg-red px-6 py-4 font-display text-lg font-bold text-white uppercase"
-					>Veranstaltungen</a
-				>
-				<a
-					href="#wohnen"
-					class="hard hard-press rounded-2xl bg-paper px-6 py-4 font-display text-lg font-bold uppercase"
-					>Zimmer ansehen</a
-				>
-			</div>
+			<div class="hidden md:block md:grow" aria-hidden="true"></div>
 		</div>
 
 		<!-- Image cluster: one large frame over two smaller ones, each with a
 		     solid caption bar, closed off by the next-event strip. -->
 		<div class="flex flex-col gap-5">
-			<div class="hard relative h-72 overflow-hidden rounded-2xl sm:h-80 lg:h-96">
+			<div class="hard-flat relative h-72 overflow-hidden rounded-2xl sm:h-80 lg:h-96">
 				<img
 					src={asset('/img/live_in_der_makaria_2.jpg')}
 					alt="Bassist im Bühnenlicht bei Live in der Makaria"
@@ -254,7 +251,7 @@
 				<span class="caption-bar bg-blue">Live in der Makaria</span>
 			</div>
 			<div class="grid grid-cols-2 gap-5 lg:gap-6">
-				<div class="hard relative h-44 overflow-hidden rounded-2xl lg:h-52">
+				<div class="hard-flat relative h-44 overflow-hidden rounded-2xl lg:h-52">
 					<img
 						src={asset('/img/jazzkeller.jpg')}
 						alt="Bandprobe im Jazzkeller"
@@ -263,7 +260,7 @@
 					/>
 					<span class="caption-bar bg-gold">Jazzkeller</span>
 				</div>
-				<div class="hard relative h-44 overflow-hidden rounded-2xl lg:h-52">
+				<div class="hard-flat relative h-44 overflow-hidden rounded-2xl lg:h-52">
 					<img
 						src={asset('/img/konzertsaal.jpg')}
 						alt="Hände am Flügel im Konzertsaal"
@@ -329,7 +326,15 @@
 	<div use:reveal class="mt-12 grid gap-8 sm:grid-cols-3 lg:gap-10">
 		{#each pillars as pillar (pillar.title)}
 			<div class="hard {pillar.shadow} rounded-2xl bg-paper p-6">
-				<h3 class="font-display text-xl font-bold">{pillar.title}</h3>
+				<h3 class="font-display text-xl font-bold">
+					{#if 'mark' in pillar}
+						{@const at = pillar.title.indexOf(pillar.mark)}
+						{pillar.title.slice(0, at)}<mark class="pillar-mark">{pillar.mark}</mark
+						>{pillar.title.slice(at + pillar.mark.length)}
+					{:else}
+						{pillar.title}
+					{/if}
+				</h3>
 				<p class="mt-3 leading-relaxed text-muted">{pillar.text}</p>
 			</div>
 		{/each}
@@ -355,7 +360,7 @@
 
 		<div use:reveal data-js-only class="mt-12 grid gap-8 sm:grid-cols-3 lg:gap-10">
 			{#each landing.highlights as event (event.id)}
-				<article class="hard overflow-hidden rounded-2xl bg-paper">
+				<article class="hard-flat overflow-hidden rounded-2xl bg-paper">
 					<img
 						src={eventImageUrl(event.image)}
 						alt={event.imageAlt ?? ''}
@@ -372,7 +377,7 @@
 			{/each}
 		</div>
 
-		<div class="hard mt-8 rounded-2xl bg-paper p-6 text-center">
+		<div class="hard-flat mt-8 rounded-2xl bg-gold p-6 text-center">
 			<p class="font-display text-lg font-bold sm:text-xl">
 				{weeklyLine}
 			</p>
@@ -393,7 +398,7 @@
 
 	<div use:reveal class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
 		{#each rooms as room (room.title)}
-			<div class="hard overflow-hidden rounded-2xl {room.bg}">
+			<div class="hard-flat overflow-hidden rounded-2xl {room.bg}">
 				<img
 					src={asset(room.image)}
 					alt={room.alt}
@@ -431,7 +436,7 @@
 				{@const current = i === active}
 				<div
 					bind:this={slideEls[i]}
-					class="hard slide relative h-full shrink-0 overflow-hidden rounded-2xl {current
+					class="hard-flat slide relative h-full shrink-0 overflow-hidden rounded-2xl {current
 						? 'w-[24.9rem] sm:w-[32rem] lg:w-[42.67rem]'
 						: 'slide-lift w-16 sm:w-24 lg:w-28'}"
 				>
@@ -529,7 +534,7 @@
 						src={asset(photo.src)}
 						alt={photo.alt}
 						loading="lazy"
-						class="hard aspect-[4/3] w-full rounded-2xl object-cover"
+						class="hard-flat aspect-[4/3] w-full rounded-2xl object-cover"
 					/>
 				{/each}
 			</div>
@@ -549,8 +554,8 @@
 			</p>
 		</div>
 		<div class="flex flex-col items-start justify-center gap-5">
-			<p class="font-display text-2xl leading-tight font-bold text-blue">
-				Bonner Talweg 60<br />53113 Bonn
+			<p class="font-display text-2xl leading-tight font-bold">
+				Bonner&nbsp;Talweg&nbsp;60<br />53113&nbsp;Bonn
 			</p>
 			<div class="flex flex-wrap gap-3">
 				<MailtoLink

@@ -9,9 +9,9 @@
 	<h1>Impressum / Rechtsausschluss</h1>
 
 	<p>
-		AMV Makaria Bonn<br />
-		Bonner Talweg 60<br />
-		53113 Bonn
+		AMV&nbsp;Makaria&nbsp;Bonn<br />
+		Bonner&nbsp;Talweg&nbsp;60<br />
+		53113&nbsp;Bonn
 	</p>
 
 	<p>E-Mail: kontakt@amv-makaria.de</p>
