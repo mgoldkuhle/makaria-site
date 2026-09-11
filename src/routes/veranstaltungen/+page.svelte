@@ -58,10 +58,12 @@
 />
 
 <div class="border-b-3 border-ink bg-blue">
-	<section class="mx-auto max-w-[88rem] px-6 pt-20 pb-12 sm:px-8 sm:pt-28 sm:pb-16 lg:px-12">
+	<section class="mx-auto max-w-[88rem] px-6 py-20 sm:px-8 sm:py-28 lg:px-12">
 		<span class="section-mark bg-white" aria-hidden="true"></span>
 		<div class="mt-4 flex flex-wrap items-end gap-x-6 gap-y-4">
-			<h1 class="type-pop-ink font-display text-4xl font-bold text-white sm:text-5xl">
+			<h1
+				class="type-pop-ink font-display text-3xl font-bold text-white uppercase sm:text-5xl lg:text-6xl"
+			>
 				{semester}
 			</h1>
 			<div class="flex flex-wrap gap-3">
@@ -143,19 +145,11 @@
 				als PDF und .ics.
 			</p>
 		</noscript>
-	</section>
 
-	<section>
-		<div class="mx-auto max-w-[88rem] px-6 pb-20 sm:px-8 sm:pb-28 lg:px-12">
-			<span class="section-mark bg-white" aria-hidden="true"></span>
-			<h2 class="type-pop-ink font-display text-3xl font-bold text-white sm:text-4xl">
-				Feste Termine jede Woche
-			</h2>
-
-			<div use:reveal class="mt-8">
-				<div class="hard-flat rounded-2xl bg-gold p-5 text-center">
-					<p class="font-display text-lg font-bold sm:text-xl">{weeklyLine}</p>
-				</div>
+		<!-- mt-8 matches the grid's gap-8, so the card reads as one more row -->
+		<div use:reveal class="mt-8">
+			<div class="hard-flat rounded-2xl bg-gold p-5 text-center">
+				<p class="font-display text-lg font-bold sm:text-xl">{weeklyLine}</p>
 			</div>
 		</div>
 	</section>
