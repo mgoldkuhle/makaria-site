@@ -176,13 +176,12 @@
 		text-shadow: 3px 3px 0 var(--color-paper);
 	}
 
-	/* Two stacked hard ghosts, as in the template's hero. White fill alone is
-	   only 2.4:1 over the blue end of the gradient; the offset ink layer is what
-	   makes it legible. */
-	.type-pop-layered {
-		text-shadow:
-			4px 4px 0 var(--color-red),
-			8px 8px 0 var(--color-ink);
+	/* Hero headline: one ink ghost. White fill alone is only 2.4:1 over the
+	   blue end of the gradient; the offset ink layer is what makes it legible.
+	   4px rather than the 3px of the section headings — the hero runs 48-96px,
+	   so it carries a wider offset. */
+	.type-pop-hero {
+		text-shadow: 4px 4px 0 var(--color-ink);
 	}
 
 	/* Fine horizontal scanlines over a colour field, so big flat gradients

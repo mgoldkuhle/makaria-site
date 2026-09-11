@@ -39,19 +39,16 @@
 	const pillars = [
 		{
 			title: 'Musik im Mittelpunkt',
-			text: 'Ob solo am Klavier, in einer Band, im Kammermusik-Ensemble, an der Tontechnik oder beim Tanzen. Uns alle verbindet eine Begeisterung für die Musik.',
-			shadow: 'hard-blue'
+			text: 'Ob solo am Klavier, in einer Band, im Kammermusik-Ensemble, an der Tontechnik oder beim Tanzen. Uns alle verbindet eine Begeisterung für die Musik.'
 		},
 		{
 			title: 'Ein Treffpunkt',
-			text: 'Come as you are! Unser Haus am Bonner Talweg ist ein Wohlfühlort für Studierende jeder Art zum gemeinsamen Musizieren, Abhängen, Feiern und manchmal auch Studieren.',
-			shadow: 'hard-red'
+			text: 'Come as you are! Unser Haus am Bonner Talweg ist ein Wohlfühlort für Studierende jeder Art zum gemeinsamen Musizieren, Abhängen, Feiern und manchmal auch Studieren.'
 		},
 		{
 			title: 'Nicht so eine Verbindung',
 			mark: 'so',
-			text: 'Wir sind gemischt, nicht schlagend und nicht farbentragend. Kein Saufzwang, kein rechtsextremes Gedankengut, keine Aufnahmeprüfungen.',
-			shadow: 'hard-gold'
+			text: 'Wir sind gemischt, nicht schlagend und nicht farbentragend. Kein Saufzwang, kein rechtsextremes Gedankengut, keine Aufnahmeprüfungen.'
 		}
 	] as const;
 
@@ -61,37 +58,25 @@
 			title: 'Der Altbau',
 			text: 'Unser Haus steht seit 1906 am Bonner\u00A0Talweg\u00A060 im Herzen der Südstadt. Sieben Zimmer für Studierende, unabhängig von Geschlecht, Herkunft oder Ausrichtung.',
 			image: '/img/fassade.jpg',
-			alt: 'Der komplette Giebel der Fassade',
-			bg: 'bg-blue',
-			fg: 'text-ink',
-			fgMuted: 'text-ink/75'
+			alt: 'Der komplette Giebel der Fassade'
 		},
 		{
 			title: 'Der Konzertsaal',
 			text: 'Ein Flügel, gute Akustik und viel Platz für Ensembles, Theater und unsere Feste. Der Kneipsaal liegt gleich nebenan, für die Party danach und unsere Mitgliederversammlungen.',
 			image: '/img/konzertsaal.jpg',
-			alt: 'Hände am Flügel im Konzertsaal',
-			bg: 'bg-blue',
-			fg: 'text-ink',
-			fgMuted: 'text-ink/75'
+			alt: 'Hände am Flügel im Konzertsaal'
 		},
 		{
 			title: 'Der Jazzkeller',
 			text: 'Unser Proberaum im Keller, mit Verstärkern, Schlagzeug und allem, was sonst noch dazugehört. Hier proben die Bands der Makaria und von Freunden, hier wird gejammt und aufgenommen.',
 			image: '/img/jazzkeller.jpg',
-			alt: 'Bandprobe im Jazzkeller',
-			bg: 'bg-blue',
-			fg: 'text-ink',
-			fgMuted: 'text-ink/75'
+			alt: 'Bandprobe im Jazzkeller'
 		},
 		{
 			title: 'Der Garten',
 			text: 'Blumenbeete, Lichterketten und viel Platz zum Chillen, Sonnenbaden und für gemütliche Sommerabende. 10 Meter darüber liegt unsere sonnige Dachterrasse.',
 			image: '/img/garten.jpg',
-			alt: 'Blumenbeete im Garten',
-			bg: 'bg-blue',
-			fg: 'text-ink',
-			fgMuted: 'text-ink/75'
+			alt: 'Blumenbeete im Garten'
 		}
 	] as const;
 
@@ -220,7 +205,7 @@
 		<div class="flex flex-col items-start gap-6 md:gap-0">
 			<div class="hidden md:block md:grow" aria-hidden="true"></div>
 			<h1
-				class="type-pop-layered font-display text-5xl leading-[0.92] font-bold tracking-[-0.03em] text-white uppercase sm:text-6xl lg:text-7xl xl:text-8xl"
+				class="type-pop-hero font-display text-5xl leading-[0.92] font-bold tracking-[-0.03em] text-white uppercase sm:text-6xl lg:text-7xl xl:text-8xl"
 			>
 				Ein Haus<br />voller Musik
 			</h1>
@@ -248,7 +233,7 @@
 					class="blink absolute top-3 left-3 rounded-md bg-red px-2.5 py-1 text-xs font-bold tracking-[0.08em] text-white uppercase"
 					>● Live</span
 				>
-				<span class="caption-bar bg-blue">Live in der Makaria</span>
+				<span class="caption-bar bg-gold">Live in der Makaria</span>
 			</div>
 			<div class="grid grid-cols-2 gap-5 lg:gap-6">
 				<div class="hard-flat relative h-44 overflow-hidden rounded-2xl lg:h-52">
@@ -267,7 +252,7 @@
 						loading="lazy"
 						class="h-full w-full object-cover"
 					/>
-					<span class="caption-bar bg-red text-white">Konzertsaal</span>
+					<span class="caption-bar bg-gold">Konzertsaal</span>
 				</div>
 			</div>
 			<a
@@ -325,7 +310,7 @@
 
 	<div use:reveal class="mt-12 grid gap-8 sm:grid-cols-3 lg:gap-10">
 		{#each pillars as pillar (pillar.title)}
-			<div class="hard {pillar.shadow} rounded-2xl bg-paper p-6">
+			<div class="hard hard-blue rounded-2xl bg-paper p-6">
 				<h3 class="font-display text-xl font-bold">
 					{#if 'mark' in pillar}
 						{@const at = pillar.title.indexOf(pillar.mark)}
@@ -391,14 +376,9 @@
 <section id="wohnen" class="mx-auto max-w-[88rem] px-6 py-20 sm:px-8 sm:py-28 lg:px-12">
 	<span class="section-mark bg-blue" aria-hidden="true"></span>
 	<h2 class="type-pop font-display text-3xl font-bold uppercase sm:text-5xl lg:text-6xl">Die WG</h2>
-	<p class="mt-4 max-w-[46ch] leading-relaxed text-muted">
-		Ein Altbau von 1906 mitten in der Bonner Südstadt, vier Minuten zur Unibibliothek. Weil das Haus
-		uns selbst gehört, liegt die Miete deutlich unter dem Bonner Marktpreis.
-	</p>
-
 	<div use:reveal class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
 		{#each rooms as room (room.title)}
-			<div class="hard-flat overflow-hidden rounded-2xl {room.bg}">
+			<div class="hard hard-blue overflow-hidden rounded-2xl bg-paper">
 				<img
 					src={asset(room.image)}
 					alt={room.alt}
@@ -406,8 +386,8 @@
 					class="h-44 w-full border-b-3 border-ink object-cover"
 				/>
 				<div class="p-5">
-					<h3 class="font-display text-xl font-bold {room.fg}">{room.title}</h3>
-					<p class="mt-2 text-sm leading-relaxed {room.fgMuted}">{room.text}</p>
+					<h3 class="font-display text-xl font-bold">{room.title}</h3>
+					<p class="mt-2 text-sm leading-relaxed text-muted">{room.text}</p>
 				</div>
 			</div>
 		{/each}
@@ -549,8 +529,8 @@
 			<span class="section-mark bg-blue" aria-hidden="true"></span>
 			<h2 class="font-display text-3xl font-bold uppercase sm:text-4xl">Schreib uns</h2>
 			<p class="mt-4 max-w-[38ch] leading-relaxed text-muted">
-				Ein Satz reicht, egal ob Du ein Zimmer suchst oder einfach zum Konzert kommen willst.
-				Donnerstags ab 20 Uhr steht die Tür sowieso offen.
+				Für weitere Infos zu unseren Veranstaltungen, Zimmern, zur Theatergruppe oder zur Makaria,
+				schicke uns gerne eine Nachricht per Mail oder auf Instagram.
 			</p>
 		</div>
 		<div class="flex flex-col items-start justify-center gap-5">
