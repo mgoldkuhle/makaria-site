@@ -3,23 +3,28 @@
 	import { asset } from '$app/paths';
 	import { reveal } from '$lib/actions/reveal';
 	import {
+		calendar,
 		downloads,
 		eventImageUrl,
-		fetchEvents,
+		fetchUpcomingEvents,
 		formatEventDate,
 		formatEventTime,
 		isSupabaseConfigured,
-		labelStyles,
-		type EventLabel,
 		placeholderEvents,
 		semesterLabel,
+		UPCOMING_LIMIT,
+		upcomingFromLocal,
 		weeklyLine,
 		type MakariaEvent
 	} from '$lib/data/events';
+	import CalendarDialog from '$lib/components/CalendarDialog.svelte';
+	import EventLabels from '$lib/components/EventLabels.svelte';
 	import Seo from '$lib/components/Seo.svelte';
 
-	let events: MakariaEvent[] = $state(placeholderEvents);
+	// Upcoming only, soonest first. Past events are not listed.
+	let events: MakariaEvent[] = $state(upcomingFromLocal(placeholderEvents));
 	let failed = $state(false);
+	let calendarDialog: ReturnType<typeof CalendarDialog> | undefined = $state();
 
 	// Deliberately NOT the computed label: whatever is prerendered is frozen at
 	// build time, so a site built in September would still claim "Sommersemester"
@@ -33,7 +38,7 @@
 		semester = semesterLabel();
 		if (!isSupabaseConfigured) return;
 		try {
-			const rows = await fetchEvents();
+			const rows = await fetchUpcomingEvents(UPCOMING_LIMIT);
 			if (rows) events = rows;
 		} catch (error) {
 			console.error('[events] Laden fehlgeschlagen:', error);
@@ -41,15 +46,6 @@
 		}
 	});
 </script>
-
-{#snippet labelChips(labels: readonly EventLabel[])}
-	{#each labels as label (label)}
-		<span
-			class="rounded-full px-3 py-1 text-xs font-bold tracking-wide uppercase {labelStyles[label]}"
-			>{label}</span
-		>
-	{/each}
-{/snippet}
 
 <Seo
 	title="Veranstaltungen"
@@ -72,14 +68,18 @@
 					class="hard hard-press rounded-full bg-paper px-4 py-1.5 font-hand text-lg font-bold"
 					>Download</a
 				>
-				<a
-					href={asset(downloads.ics)}
-					class="hard hard-press hard-gold rounded-full bg-paper px-4 py-1.5 font-hand text-lg font-bold"
-					>.ics</a
-				>
+				{#if calendar.download}
+					<button
+						type="button"
+						aria-haspopup="dialog"
+						class="hard hard-press hard-gold cursor-pointer rounded-full bg-paper px-4 py-1.5 font-hand text-lg font-bold"
+						onclick={() => calendarDialog?.open()}>.ics</button
+					>
+				{/if}
 				<a
 					href={downloads.svEvents}
-					rel="external"
+					target="_blank"
+					rel="external noopener noreferrer"
 					class="hard hard-press hard-red rounded-full bg-paper px-4 py-1.5 font-hand text-lg font-bold"
 					>im SV</a
 				>
@@ -90,6 +90,10 @@
 			<p class="hard-flat mt-10 rounded-2xl bg-paper p-5 font-bold">
 				Die Termine lassen sich gerade nicht laden. Das Semesterprogramm gibt es oben als PDF und
 				.ics.
+			</p>
+		{:else if events.length === 0}
+			<p data-js-only class="hard-flat mt-10 rounded-2xl bg-paper p-5 font-bold">
+				Gerade stehen keine Termine an. Das neue Semesterprogramm folgt bald.
 			</p>
 		{:else}
 			<div
@@ -114,7 +118,7 @@
 								/>
 								{#if event.labels.length}
 									<div class="absolute top-3 right-3 flex flex-wrap justify-end gap-2">
-										{@render labelChips(event.labels)}
+										<EventLabels labels={event.labels} />
 									</div>
 								{/if}
 							</div>
@@ -131,7 +135,7 @@
 							{/if}
 							<!-- no photo to sit on, so the chips fall back into the body -->
 							{#if !image && event.labels.length}
-								<div class="mt-3 flex flex-wrap gap-2">{@render labelChips(event.labels)}</div>
+								<div class="mt-3 flex flex-wrap gap-2"><EventLabels labels={event.labels} /></div>
 							{/if}
 						</div>
 					</article>
@@ -154,3 +158,11 @@
 		</div>
 	</section>
 </div>
+
+{#if calendar.download}
+	<CalendarDialog
+		bind:this={calendarDialog}
+		downloadUrl={calendar.download}
+		subscribeUrl={calendar.subscribe}
+	/>
+{/if}

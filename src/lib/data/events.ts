@@ -20,14 +20,14 @@ const SUPABASE_ANON_KEY: string = import.meta.env.VITE_SUPABASE_ANON_KEY ?? '';
 // it is already an absolute URL or a local /img path.
 const IMAGE_BASE: string = import.meta.env.VITE_EVENT_IMAGE_BASE ?? '';
 
-// PLACEHOLDER — align with the real schema once the table exists.
-const TABLE = 'events';
+// View in the Meine Makaria database (sql/migration_website_veranstaltungen_view_2026-09.sql
+// in the Makaria repo). Only published events, only display fields.
+const TABLE = 'website_veranstaltungen';
 const COLUMNS = 'id,title,image,image_alt,starts_on,ends_on,starts_at,description,labels';
-/** Newest first. Flip to `starts_on.asc` to show what is coming up instead. */
-const ORDER = 'starts_on.desc';
-export const EVENT_LIMIT = 9;
-/** Rows pulled for the landing page before Intern events are filtered out. */
-const UPCOMING_WINDOW = 12;
+/** Upcoming rows the landing page needs for its cards. */
+const LANDING_COUNT = 3;
+/** Upper bound for the Veranstaltungen page, which lists every upcoming event. */
+export const UPCOMING_LIMIT = 100;
 
 export const isSupabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 
@@ -80,7 +80,28 @@ function toLabels(value: unknown): EventLabel[] {
 		.filter((entry): entry is EventLabel => (KNOWN_LABELS as string[]).includes(entry));
 }
 
+/**
+ * Descriptions are maintained as Markdown in Meine Makaria; the cards show
+ * plain text. Mirrors stripMarkdown() in makaria-admin/src/lib/utils.ts.
+ */
+function stripMarkdown(text: string): string {
+	return text
+		.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+		.replace(/\*\*(.+?)\*\*/g, '$1')
+		.replace(/\*(.+?)\*/g, '$1')
+		.replace(/^- /gm, '')
+		.replace(/^(\d+)\. /gm, (match, num: string, offset: number, all: string) => {
+			// Only real list items: a leading "1." or a follow-up after another item,
+			// never dates like "6. November".
+			if (num === '1') return '';
+			const prevLine = all.substring(0, offset).split('\n').slice(-2, -1)[0] ?? '';
+			return /^\d+\. /.test(prevLine) ? '' : match;
+		})
+		.replace(/ {2}\n/g, '\n');
+}
+
 function toEvent(row: Row): MakariaEvent {
+	const description = str(row.description);
 	return {
 		id: String(row.id ?? crypto.randomUUID()),
 		title: str(row.title) ?? 'Ohne Titel',
@@ -89,7 +110,7 @@ function toEvent(row: Row): MakariaEvent {
 		startsOn: str(row.starts_on) ?? '',
 		endsOn: str(row.ends_on),
 		startsAt: str(row.starts_at),
-		description: str(row.description),
+		description: description ? stripMarkdown(description) : null,
 		labels: toLabels(row.labels)
 	};
 }
@@ -118,38 +139,26 @@ function todayIso(): string {
 }
 
 /**
- * Newest first, regardless of date. Returns null when Supabase is not
- * configured yet, which callers treat as "show the placeholders"; throws on a
- * real failure, so a misconfigured key is visible rather than looking empty.
- */
-export async function fetchEvents(fetchFn: typeof fetch = fetch): Promise<MakariaEvent[] | null> {
-	if (!isSupabaseConfigured) return null;
-	return query(`order=${encodeURIComponent(ORDER)}&limit=${EVENT_LIMIT}`, fetchFn);
-}
-
-/**
- * Soonest first, limited to events that have not finished yet. A multi-day
+ * Soonest first, limited to events that have not finished yet. Returns null
+ * when Supabase is not configured yet, which callers treat as "show the
+ * placeholders"; throws on a real failure, so a misconfigured key is visible
+ * rather than looking empty. A multi-day
  * event still running today counts as upcoming, hence the check against
  * ends_on as well — for single-day rows ends_on is null and the or() falls
  * through to starts_on.
- *
- * The window is deliberately larger than the three cards need: Intern events
- * are filtered client-side, so several in a row would otherwise starve it.
  */
 export async function fetchUpcomingEvents(
+	limit: number = LANDING_COUNT,
 	fetchFn: typeof fetch = fetch
 ): Promise<MakariaEvent[] | null> {
 	if (!isSupabaseConfigured) return null;
 	const today = todayIso();
 	const params =
-		`or=(ends_on.gte.${today},starts_on.gte.${today})` +
-		`&order=starts_on.asc&limit=${UPCOMING_WINDOW}`;
+		`or=(ends_on.gte.${today},starts_on.gte.${today})` + `&order=starts_on.asc&limit=${limit}`;
 	return query(params, fetchFn);
 }
 
 /* ---- selection ----------------------------------------------------------- */
-
-export const isPublicEvent = (event: MakariaEvent) => !event.labels.includes('Intern');
 
 /** Not finished yet — the end date decides for multi-day events. */
 export function isUpcoming(event: MakariaEvent, today = todayIso()): boolean {
@@ -159,32 +168,27 @@ export function isUpcoming(event: MakariaEvent, today = todayIso()): boolean {
 export type LandingEvents = { next: MakariaEvent | null; highlights: MakariaEvent[] };
 
 /**
- * What the landing page shows. `upcoming` must be soonest-first and `newest`
- * newest-first; both are filtered to non-Intern here.
- *
- * Highlights: the next `count` upcoming events, or — if there aren't that many
- * — the `count` newest instead (a swap, not a top-up, so the row never mixes
- * past and future). Next: the soonest upcoming, else the newest.
+ * What the landing page shows: the next `count` upcoming events (soonest
+ * first, Intern included with its label chip). Past events never appear; with
+ * nothing upcoming the row stays empty and the page shows a hint instead.
  */
 export function selectLandingEvents(
 	upcoming: MakariaEvent[],
-	newest: MakariaEvent[],
-	count = 3
+	count = LANDING_COUNT
 ): LandingEvents {
-	const futurePublic = upcoming.filter(isPublicEvent);
-	const newestPublic = newest.filter(isPublicEvent);
-	return {
-		highlights: (futurePublic.length >= count ? futurePublic : newestPublic).slice(0, count),
-		next: futurePublic[0] ?? newestPublic[0] ?? null
-	};
+	return { highlights: upcoming.slice(0, count), next: upcoming[0] ?? null };
 }
 
-/** Builds both orderings from a local array, for the placeholder path. */
-export function landingFromLocal(events: MakariaEvent[], count = 3): LandingEvents {
-	const byStart = (a: MakariaEvent, b: MakariaEvent) => a.startsOn.localeCompare(b.startsOn);
-	const upcoming = events.filter((event) => isUpcoming(event)).sort(byStart);
-	const newest = [...events].sort((a, b) => byStart(b, a));
-	return selectLandingEvents(upcoming, newest, count);
+/** Same rule applied to a local array, for the placeholder path. */
+export function landingFromLocal(events: MakariaEvent[], count = LANDING_COUNT): LandingEvents {
+	return selectLandingEvents(upcomingFromLocal(events), count);
+}
+
+/** Placeholder path of the Veranstaltungen page: upcoming only, soonest first. */
+export function upcomingFromLocal(events: MakariaEvent[]): MakariaEvent[] {
+	return events
+		.filter((event) => isUpcoming(event))
+		.sort((a, b) => a.startsOn.localeCompare(b.startsOn));
 }
 
 /* ---- presentation helpers ------------------------------------------------ */
@@ -365,8 +369,21 @@ export const placeholderEvents: MakariaEvent[] = [
 
 export const weeklyLine = 'Szenisches Theater · wöchentlich · Donnerstags (20 Uhr)';
 
+/*
+ * Calendar feed, generated live from the same view by the Supabase Edge
+ * Function `veranstaltungen-ics` (Makaria repo, supabase/functions). Upcoming
+ * events plus the last 12 months; Intern and SV events are tagged in the title.
+ * `webcal:` makes calendar apps offer a subscription instead of a one-off import.
+ */
+const CALENDAR_FEED = SUPABASE_URL
+	? `${SUPABASE_URL.replace(/\/$/, '')}/functions/v1/veranstaltungen-ics`
+	: '';
+export const calendar = {
+	download: CALENDAR_FEED ? `${CALENDAR_FEED}?download=1` : '',
+	subscribe: CALENDAR_FEED.replace(/^https?:/, 'webcal:')
+};
+
 export const downloads = {
-	ics: '/programm/ss26.ics' as const,
 	pdf: '/programm/sempro26.pdf' as const,
 	svEvents: 'https://sv.org/veranstaltungen/'
 };
