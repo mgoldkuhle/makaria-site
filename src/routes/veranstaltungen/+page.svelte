@@ -11,7 +11,7 @@
 		formatEventTime,
 		isSupabaseConfigured,
 		placeholderEvents,
-		semesterLabel,
+		// semesterLabel, // see the heading note below
 		UPCOMING_LIMIT,
 		upcomingFromLocal,
 		weeklyLine,
@@ -26,16 +26,19 @@
 	let failed = $state(false);
 	let calendarDialog: ReturnType<typeof CalendarDialog> | undefined = $state();
 
-	// Deliberately NOT the computed label: whatever is prerendered is frozen at
-	// build time, so a site built in September would still claim "Sommersemester"
-	// all through October. A neutral heading can never go stale, and clients with
-	// JS get the real semester on mount.
+	// The heading is a plain "Veranstaltungen" for now.
+	//
+	// To go back to "Sommersemester 26" / "Wintersemester 26/27": uncomment the
+	// semesterLabel import above and the assignment in onMount below. It is set
+	// on mount rather than here because whatever is prerendered freezes at build
+	// time — a site built in September would still claim "Sommersemester" all
+	// through October — so the neutral value is what JS-less clients keep.
 	let semester = $state('Veranstaltungen');
 
 	// Runs after hydration only: the page is prerendered, so this is what lets
 	// an edit in Supabase show up without rebuilding the site.
 	onMount(async () => {
-		semester = semesterLabel();
+		// semester = semesterLabel();
 		if (!isSupabaseConfigured) return;
 		try {
 			const rows = await fetchUpcomingEvents(UPCOMING_LIMIT);

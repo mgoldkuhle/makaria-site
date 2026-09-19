@@ -85,9 +85,9 @@
 	const slides: Slide[] = [
 		{
 			kind: 'video',
-			src: 'https://www.youtube-nocookie.com/embed/ZQ7JnpB5FMM',
+			src: 'https://www.youtube-nocookie.com/embed/2LPgcADhYe4',
 			poster: '/img/live_in_der_makaria.jpg',
-			label: 'Video: AMV Makaria Bonn'
+			label: 'Video: Makaria aLive Concert'
 		},
 		{ kind: 'photo', src: '/img/fassade.jpg', alt: 'Der komplette Giebel der Fassade' },
 		{
