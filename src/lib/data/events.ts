@@ -26,6 +26,12 @@ const TABLE = 'website_veranstaltungen';
 const COLUMNS = 'id,title,image,image_alt,starts_on,ends_on,starts_at,description,labels';
 /** Upcoming rows the landing page needs for its cards. */
 const LANDING_COUNT = 3;
+/**
+ * Rows the landing page pulls before Intern events are filtered out. Wider than
+ * LANDING_COUNT on purpose: Intern events are dropped client-side, so fetching
+ * only three would leave gaps whenever a couple of them fall next in the diary.
+ */
+export const LANDING_WINDOW = 12;
 /** Upper bound for the Veranstaltungen page, which lists every upcoming event. */
 export const UPCOMING_LIMIT = 100;
 
@@ -167,16 +173,20 @@ export function isUpcoming(event: MakariaEvent, today = todayIso()): boolean {
 
 export type LandingEvents = { next: MakariaEvent | null; highlights: MakariaEvent[] };
 
+/** Internal events are for members; the landing page shows public ones only. */
+export const isPublicEvent = (event: MakariaEvent) => !event.labels.includes('Intern');
+
 /**
- * What the landing page shows: the next `count` upcoming events (soonest
- * first, Intern included with its label chip). Past events never appear; with
- * nothing upcoming the row stays empty and the page shows a hint instead.
+ * What the landing page shows: the next `count` upcoming public events, soonest
+ * first. Intern events are left to the Veranstaltungen page. Past events never
+ * appear; with nothing upcoming the row stays empty and the page shows a hint.
  */
 export function selectLandingEvents(
 	upcoming: MakariaEvent[],
 	count = LANDING_COUNT
 ): LandingEvents {
-	return { highlights: upcoming.slice(0, count), next: upcoming[0] ?? null };
+	const shown = upcoming.filter(isPublicEvent);
+	return { highlights: shown.slice(0, count), next: shown[0] ?? null };
 }
 
 /** Same rule applied to a local array, for the placeholder path. */

@@ -11,6 +11,7 @@
 		fetchUpcomingEvents,
 		formatEventDate,
 		isSupabaseConfigured,
+		LANDING_WINDOW,
 		landingFromLocal,
 		placeholderEvents,
 		selectLandingEvents,
@@ -25,7 +26,7 @@
 		mounted = true;
 		if (!isSupabaseConfigured) return;
 		try {
-			landing = selectLandingEvents((await fetchUpcomingEvents()) ?? []);
+			landing = selectLandingEvents((await fetchUpcomingEvents(LANDING_WINDOW)) ?? []);
 		} catch (error) {
 			console.error('[events] Laden fehlgeschlagen, zeige Platzhalter:', error);
 		}
