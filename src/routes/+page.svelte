@@ -420,10 +420,13 @@
 		</div>
 
 		<!-- One row, one enlarged slide. The row scrolls the active slide to
-		     centre; the strip runs past both edges so it reads as continuing. -->
+		     centre; the strip runs past both edges so it reads as continuing.
+		     On screens wide enough for the whole row it sits centred; 'safe'
+		     falls back to start alignment once it overflows, so nothing ends up
+		     cut off out of scroll reach on the left. -->
 		<div
 			data-js-only
-			class="no-scrollbar mt-10 flex h-[17rem] gap-4 overflow-x-auto px-6 pt-4 pb-8 sm:h-[21rem] sm:px-8 lg:h-[27rem] lg:px-12"
+			class="no-scrollbar mt-10 flex h-[17rem] justify-center-safe gap-4 overflow-x-auto px-6 pt-4 pb-8 sm:h-[21rem] sm:px-8 lg:h-[27rem] lg:px-12"
 		>
 			{#each slides as slide, i (slide.src)}
 				{@const current = i === active}
