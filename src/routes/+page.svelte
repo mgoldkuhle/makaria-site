@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve, asset } from '$app/paths';
+	import EventLabels from '$lib/components/EventLabels.svelte';
 	import Lightbox from '$lib/components/Lightbox.svelte';
 	import MailtoLink from '$lib/components/MailtoLink.svelte';
 	import Seo from '$lib/components/Seo.svelte';
@@ -7,7 +8,6 @@
 	import { onMount } from 'svelte';
 	import {
 		eventImageUrl,
-		fetchEvents,
 		fetchUpcomingEvents,
 		formatEventDate,
 		isSupabaseConfigured,
@@ -25,12 +25,7 @@
 		mounted = true;
 		if (!isSupabaseConfigured) return;
 		try {
-			const upcoming = (await fetchUpcomingEvents()) ?? [];
-			// The newest list is only needed when there aren't enough upcoming
-			// ones, so it costs a second request only in that case.
-			const enough = upcoming.filter((event) => !event.labels.includes('Intern')).length >= 3;
-			const newest = enough ? [] : ((await fetchEvents()) ?? []);
-			landing = selectLandingEvents(upcoming, newest);
+			landing = selectLandingEvents((await fetchUpcomingEvents()) ?? []);
 		} catch (error) {
 			console.error('[events] Laden fehlgeschlagen, zeige Platzhalter:', error);
 		}
@@ -343,20 +338,38 @@
 			<div class="hidden sm:block">{@render allEventsLink()}</div>
 		</div>
 
+		{#if landing.highlights.length === 0}
+			<p data-js-only class="hard-flat mt-12 rounded-2xl bg-paper p-5 font-bold">
+				Gerade stehen keine Termine an. Das neue Semesterprogramm folgt bald.
+			</p>
+		{/if}
 		<div use:reveal data-js-only class="mt-12 grid gap-8 sm:grid-cols-3 lg:gap-10">
 			{#each landing.highlights as event (event.id)}
+				{@const image = eventImageUrl(event.image)}
 				<article class="hard-flat overflow-hidden rounded-2xl bg-paper">
-					<img
-						src={eventImageUrl(event.image)}
-						alt={event.imageAlt ?? ''}
-						loading="lazy"
-						class="aspect-video w-full border-b-3 border-ink object-cover"
-					/>
+					{#if image}
+						<div class="relative">
+							<img
+								src={image}
+								alt={event.imageAlt ?? ''}
+								loading="lazy"
+								class="aspect-video w-full border-b-3 border-ink object-cover"
+							/>
+							{#if event.labels.length}
+								<div class="absolute top-3 right-3 flex flex-wrap justify-end gap-2">
+									<EventLabels labels={event.labels} />
+								</div>
+							{/if}
+						</div>
+					{/if}
 					<div class="p-5">
 						<p class="text-xs font-bold tracking-[0.1em] text-red uppercase">
 							{formatEventDate(event)}
 						</p>
 						<h3 class="mt-1 font-display text-xl font-bold">{event.title}</h3>
+						{#if !image && event.labels.length}
+							<div class="mt-3 flex flex-wrap gap-2"><EventLabels labels={event.labels} /></div>
+						{/if}
 					</div>
 				</article>
 			{/each}
@@ -407,10 +420,13 @@
 		</div>
 
 		<!-- One row, one enlarged slide. The row scrolls the active slide to
-		     centre; the strip runs past both edges so it reads as continuing. -->
+		     centre; the strip runs past both edges so it reads as continuing.
+		     On screens wide enough for the whole row it sits centred; 'safe'
+		     falls back to start alignment once it overflows, so nothing ends up
+		     cut off out of scroll reach on the left. -->
 		<div
 			data-js-only
-			class="no-scrollbar mt-10 flex h-[17rem] gap-4 overflow-x-auto px-6 pt-4 pb-8 sm:h-[21rem] sm:px-8 lg:h-[27rem] lg:px-12"
+			class="no-scrollbar mt-10 flex h-[17rem] justify-center-safe gap-4 overflow-x-auto px-6 pt-4 pb-8 sm:h-[21rem] sm:px-8 lg:h-[27rem] lg:px-12"
 		>
 			{#each slides as slide, i (slide.src)}
 				{@const current = i === active}
