@@ -82,6 +82,15 @@
 		font-family: var(--font-display);
 		font-weight: 700;
 		text-wrap: balance;
+		/* A single long German word is easily wider than a phone. Without this it
+		   pushes the page sideways instead of wrapping. */
+		overflow-wrap: break-word;
+		hyphens: auto;
+	}
+
+	/* Same for the unbreakable tokens in running text: addresses, URLs, code. */
+	.prose :where(a, code):not(:where([class~='not-prose'] *)) {
+		overflow-wrap: break-word;
 	}
 
 	.prose :where(h1, h2, h3, h4):not(:where([class~='not-prose'] *)) {
