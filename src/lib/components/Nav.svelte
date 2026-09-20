@@ -28,7 +28,7 @@
 		     name at every size, since there is no visible text on small screens. -->
 		<a
 			href={onEvents ? resolve('/') : resolve('/veranstaltungen')}
-			aria-label={onEvents ? 'Zur Startseite' : 'Zu den Veranstaltungen'}
+			aria-label={onEvents ? 'Zur Startseite' : 'Zum Kalender'}
 			class="hard hard-press flex items-center gap-2 rounded-full bg-red p-3 text-white sm:px-5 sm:py-2.5"
 		>
 			{#if onEvents}
@@ -66,9 +66,7 @@
 					<rect x="3.5" y="5" width="17" height="15.5" rx="2" />
 					<path d="M8 3.2v3.6M16 3.2v3.6M3.5 10h17" stroke-linecap="round" />
 				</svg>
-				<span class="hidden font-display text-sm font-bold uppercase sm:inline"
-					>Veranstaltungen</span
-				>
+				<span class="hidden font-display text-sm font-bold uppercase sm:inline">Kalender</span>
 				<svg
 					viewBox="0 0 24 24"
 					fill="none"
