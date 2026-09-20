@@ -26,7 +26,16 @@
 	import Seo from '$lib/components/Seo.svelte';
 
 	// Upcoming only, soonest first. Past events are not listed.
-	let events: MakariaEvent[] = $state(upcomingFromLocal(placeholderEvents));
+	//
+	// Starts empty when Supabase is configured: rendering the placeholders first
+	// and swapping them for real events is a visible jump, and for a moment the
+	// page states invented dates as fact. A spinner holds the space instead.
+	// Without Supabase — a checkout with no .env — the placeholders still render,
+	// so the layout can be worked on.
+	let events: MakariaEvent[] = $state(
+		isSupabaseConfigured ? [] : upcomingFromLocal(placeholderEvents)
+	);
+	let loading = $state(isSupabaseConfigured);
 	let failed = $state(false);
 	let calendarDialog: ReturnType<typeof CalendarDialog> | undefined = $state();
 
@@ -100,6 +109,8 @@
 		} catch (error) {
 			console.error('[events] Laden fehlgeschlagen:', error);
 			failed = true;
+		} finally {
+			loading = false;
 		}
 	});
 </script>
@@ -111,7 +122,9 @@
 />
 
 <div class="border-b-3 border-ink bg-blue">
-	<section class="mx-auto max-w-[88rem] px-6 py-20 sm:px-8 sm:py-28 lg:px-12">
+	<section
+		class="mx-auto max-w-[88rem] px-6 pt-12 pb-20 sm:px-8 sm:pt-28 sm:pb-28 lg:px-12 [@media(max-height:32rem)]:pt-6"
+	>
 		<span class="section-mark bg-white" aria-hidden="true"></span>
 		<div class="mt-4 flex flex-wrap items-end gap-x-6 gap-y-4 [&>h1]:min-w-0">
 			<h1
@@ -142,8 +155,11 @@
 				>
 
 				{#if availableLabels.length > 1}
-					<!-- No height or width of its own: the row stretches it to match the
-					     buttons beside it. -->
+					<!-- The icon sits in a box one text-line tall (h-7 = text-lg's 1.75rem
+					     line height), so with the same py-1.5 the button is exactly as
+					     tall as the buttons beside it. Relying on the row to stretch it
+					     instead collapsed it to the icon whenever it wrapped onto a line
+					     of its own. -->
 					<button
 						type="button"
 						data-js-only
@@ -151,18 +167,20 @@
 						aria-controls="event-filter"
 						aria-label={filterOpen ? 'Filter schließen' : 'Filter öffnen'}
 						onclick={toggleFilter}
-						class="hard hard-press flex cursor-pointer items-center justify-center rounded-full bg-paper px-3"
+						class="hard hard-press flex cursor-pointer items-center justify-center rounded-full bg-paper px-3 py-1.5"
 					>
-						<svg
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2.5"
-							class="h-4 w-4"
-							aria-hidden="true"
-						>
-							<path d="M4 6h16M7 12h10M10 18h4" stroke-linecap="round" />
-						</svg>
+						<span class="flex h-7 items-center">
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2.5"
+								class="h-4 w-4"
+								aria-hidden="true"
+							>
+								<path d="M4 6h16M7 12h10M10 18h4" stroke-linecap="round" />
+							</svg>
+						</span>
 					</button>
 
 					{#if filterOpen}
@@ -198,6 +216,13 @@
 				Die Termine lassen sich gerade nicht laden. Das Semesterprogramm gibt es oben als PDF und
 				.ics.
 			</p>
+		{:else if loading}
+			<!-- data-js-only: the prerendered HTML carries this state, and without JS
+			     it would spin for ever. The noscript block below takes over there. -->
+			<div data-js-only role="status" class="mt-10 flex justify-center py-12">
+				<span class="spinner text-paper" aria-hidden="true"></span>
+				<span class="sr-only">Termine werden geladen</span>
+			</div>
 		{:else if events.length === 0}
 			<p data-js-only class="hard-flat mt-10 rounded-2xl bg-paper p-5 font-bold">
 				Gerade stehen keine Termine an. Das neue Semesterprogramm folgt bald.

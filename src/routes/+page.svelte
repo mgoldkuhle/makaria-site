@@ -15,12 +15,19 @@
 		landingFromLocal,
 		placeholderEvents,
 		selectLandingEvents,
+		type LandingEvents,
 		weeklyLine
 	} from '$lib/data/events';
 
-	// Same rules as the live path, applied to the placeholders, so the page
-	// shows a sensible selection before the table exists.
-	let landing = $state(landingFromLocal(placeholderEvents));
+	// Empty until the fetch lands when Supabase is configured: rendering the
+	// placeholders first and swapping them for real events is a visible jump,
+	// and briefly states invented dates as fact. Without Supabase — a checkout
+	// with no .env — the placeholders still render, so the layout can be worked
+	// on.
+	let landing: LandingEvents = $state(
+		isSupabaseConfigured ? { next: null, highlights: [] } : landingFromLocal(placeholderEvents)
+	);
+	let loadingEvents = $state(isSupabaseConfigured);
 
 	onMount(async () => {
 		mounted = true;
@@ -28,7 +35,9 @@
 		try {
 			landing = selectLandingEvents((await fetchUpcomingEvents(LANDING_WINDOW)) ?? []);
 		} catch (error) {
-			console.error('[events] Laden fehlgeschlagen, zeige Platzhalter:', error);
+			console.error('[events] Laden fehlgeschlagen:', error);
+		} finally {
+			loadingEvents = false;
 		}
 	});
 
@@ -84,17 +93,17 @@
 		| { kind: 'photo'; src: string; alt: string };
 
 	const slides: Slide[] = [
-		{
-			kind: 'video',
-			src: 'https://www.youtube-nocookie.com/embed/2LPgcADhYe4',
-			poster: '/img/live_in_der_makaria.jpg',
-			label: 'Video: Makaria aLive Concert'
-		},
 		{ kind: 'photo', src: '/img/fassade.jpg', alt: 'Der komplette Giebel der Fassade' },
 		{
 			kind: 'photo',
 			src: '/img/hauswand.jpg',
 			alt: 'Efeubewachsenes Fenster mit kleinen Wappen im Glas'
+		},
+		{
+			kind: 'video',
+			src: 'https://www.youtube-nocookie.com/embed/2LPgcADhYe4',
+			poster: '/img/konzertsaal.jpg',
+			label: 'Video: Makaria aLive Concert'
 		},
 		{
 			kind: 'photo',
@@ -126,6 +135,7 @@
 
 	let active = $state(0);
 	let slideEls: (HTMLElement | undefined)[] = $state([]);
+	let trackEl: HTMLDivElement | undefined = $state();
 	// Index into `slides`, not a copy of the image: the lightbox needs its
 	// position in the list to step to the next photo.
 	let lightboxIndex: number | null = $state(null);
@@ -157,18 +167,54 @@
 	// Only scroll in response to a change of slide, never on mount — an
 	// unconditional scrollIntoView here would yank the viewport to the
 	// carousel as soon as the page loads.
-	let settled = false;
-	$effect(() => {
-		const el = slideEls[active];
-		if (!settled) {
-			settled = true;
+	/**
+	 * Scrolls so the active slide ends up centred once it has finished growing.
+	 * scrollIntoView cannot do this: it measures the slide mid-transition, so it
+	 * centres a width the slide no longer has — hence the old second pass. The
+	 * resting geometry is knowable, so the scroll can be aimed at the final
+	 * position and run alongside the width change as one movement.
+	 */
+	function centreActive(index: number, previous: number, smooth: boolean) {
+		const track = trackEl;
+		const el = slideEls[index];
+		if (!track || !el) return;
+
+		const style = getComputedStyle(track);
+		const num = (value: string) => parseFloat(value) || 0;
+		const inner = track.clientHeight - num(style.paddingTop) - num(style.paddingBottom);
+		// the active slide is 16/9 of the row's content height, by construction
+		const activeWidth = (inner * 16) / 9;
+		// any slide that is neither growing nor shrinking sits at its resting width
+		const resting = slideEls.find((node, i) => node && i !== index && i !== previous);
+		const behavior = smooth ? 'smooth' : 'auto';
+
+		if (!resting) {
+			el.scrollIntoView({ behavior, inline: 'center', block: 'nearest' });
 			return;
 		}
-		el?.scrollIntoView({
-			behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-			inline: 'center',
-			block: 'nearest'
-		});
+
+		const gap = num(style.columnGap);
+		const left = num(style.paddingLeft) + index * (resting.getBoundingClientRect().width + gap);
+		track.scrollTo({ left: left - (track.clientWidth - activeWidth) / 2, behavior });
+	}
+
+	// Only move in response to a change of slide, never on mount — centring on
+	// load would yank the viewport down to the carousel.
+	let settled = false;
+	let previousActive = 0;
+	$effect(() => {
+		const index = active;
+		if (!settled) {
+			settled = true;
+			previousActive = index;
+			return;
+		}
+		centreActive(
+			index,
+			previousActive,
+			!window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		);
+		previousActive = index;
 	});
 </script>
 
@@ -259,13 +305,22 @@
 				<span class="flex flex-col">
 					<span class="text-xs font-bold tracking-[0.1em] text-muted uppercase">Nächstes Event</span
 					>
-					<span class="font-display text-lg font-bold"
-						>{landing.next?.title ?? 'Programm ansehen'}</span
-					>
+					{#if loadingEvents}
+						<span class="flex h-7 items-center"
+							><span class="spinner spinner-sm" aria-hidden="true"></span>
+							<span class="sr-only">Termine werden geladen</span></span
+						>
+					{:else}
+						<span class="font-display text-lg font-bold"
+							>{landing.next?.title ?? 'Programm ansehen'}</span
+						>
+					{/if}
 				</span>
-				<span class="shrink-0 rounded-full bg-gold px-3 py-1.5 text-sm font-bold text-ink"
-					>{landing.next ? formatEventDate(landing.next) : 'Alle Termine'}</span
-				>
+				{#if !loadingEvents}
+					<span class="shrink-0 rounded-full bg-gold px-3 py-1.5 text-sm font-bold text-ink"
+						>{landing.next ? formatEventDate(landing.next) : 'Alle Termine'}</span
+					>
+				{/if}
 			</a>
 
 			<noscript>
@@ -339,7 +394,14 @@
 			<div class="hidden sm:block">{@render allEventsLink()}</div>
 		</div>
 
-		{#if landing.highlights.length === 0}
+		{#if loadingEvents}
+			<!-- data-js-only: this state is what gets prerendered, and without JS it
+			     would spin for ever. -->
+			<div data-js-only role="status" class="mt-12 flex justify-center py-12 text-paper">
+				<span class="spinner" aria-hidden="true"></span>
+				<span class="sr-only">Termine werden geladen</span>
+			</div>
+		{:else if landing.highlights.length === 0}
 			<p data-js-only class="hard-flat mt-12 rounded-2xl bg-paper p-5 font-bold">
 				Gerade stehen keine Termine an. Das neue Semesterprogramm folgt bald.
 			</p>
@@ -429,14 +491,15 @@
 		     cut off out of scroll reach on the left. -->
 		<div
 			data-js-only
-			class="no-scrollbar mt-10 flex h-[17rem] justify-center-safe gap-4 overflow-x-auto px-6 pt-4 pb-8 sm:h-[21rem] sm:px-8 lg:h-[27rem] lg:px-12"
+			bind:this={trackEl}
+			class="no-scrollbar mt-10 flex h-[calc(38.25vw+3rem)] justify-center-safe gap-4 overflow-x-auto px-6 pt-4 pb-8 sm:h-[21rem] sm:px-8 lg:h-[27rem] lg:px-12"
 		>
 			{#each slides as slide, i (slide.src)}
 				{@const current = i === active}
 				<div
 					bind:this={slideEls[i]}
 					class="hard-flat slide relative h-full shrink-0 overflow-hidden rounded-2xl {current
-						? 'w-[24.9rem] sm:w-[32rem] lg:w-[42.67rem]'
+						? 'w-[68vw] sm:w-[32rem] lg:w-[42.67rem]'
 						: 'slide-lift w-16 sm:w-24 lg:w-28'}"
 				>
 					{#if slide.kind === 'video' && current && mounted}

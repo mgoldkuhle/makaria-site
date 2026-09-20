@@ -42,8 +42,31 @@
 
 <svelte:window onkeydown={onKey} />
 
+{#snippet arrow(dir: -1 | 1, extra: string)}
+	<!-- stopPropagation: without it the backdrop's own click handler would close
+	     the lightbox on the same click that steps it. -->
+	<button
+		type="button"
+		aria-label={dir < 0 ? 'Vorheriges Foto' : 'Nächstes Foto'}
+		class="hard hard-press h-11 w-11 items-center justify-center rounded-full bg-paper {extra}"
+		onclick={(e) => {
+			e.stopPropagation();
+			if (dir < 0) onPrev();
+			else onNext();
+		}}
+	>
+		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="h-5 w-5">
+			<path
+				d={dir < 0 ? 'M15 18l-6-6 6-6' : 'M9 6l6 6-6 6'}
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+		</svg>
+	</button>
+{/snippet}
+
 <div
-	class="scanlines fixed inset-0 z-50 flex items-center justify-center bg-ink/70 p-4 sm:p-8"
+	class="scanlines fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-ink/70 p-4 sm:gap-0 sm:p-8"
 	role="dialog"
 	aria-modal="true"
 	aria-label="Bildvorschau"
@@ -71,45 +94,27 @@
 		</svg>
 	</button>
 
-	<!-- stopPropagation on the arrows: without it the backdrop's own click
-	     handler would close the lightbox on the same click that steps it. -->
-	<button
-		type="button"
-		aria-label="Vorheriges Foto"
-		class="hard hard-press absolute left-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-paper sm:left-6"
-		onclick={(e) => {
-			e.stopPropagation();
-			onPrev();
-		}}
-	>
-		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="h-5 w-5">
-			<path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
-		</svg>
-	</button>
-	<button
-		type="button"
-		aria-label="Nächstes Foto"
-		class="hard hard-press absolute right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-paper sm:right-6"
-		onclick={(e) => {
-			e.stopPropagation();
-			onNext();
-		}}
-	>
-		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="h-5 w-5">
-			<path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
-		</svg>
-	</button>
+	<!-- From sm up the photo is narrower than the screen, so the arrows sit in
+	     the margins beside it. On a phone it fills the width and they would
+	     cover it, so there they go underneath instead. -->
+	{@render arrow(-1, 'absolute left-6 z-10 hidden sm:flex')}
+	{@render arrow(1, 'absolute right-6 z-10 hidden sm:flex')}
 
-	<!-- Same frame as the rest of the site: hard outline, solid offset shadow,
-	     caption bar along the bottom edge. -->
+	<!-- Same frame as the rest of the site: hard outline, caption bar along the
+	     bottom edge. -->
 	<div
 		role="presentation"
 		class="hard-flat relative max-h-full overflow-hidden rounded-2xl bg-ink"
 		onclick={(e) => e.stopPropagation()}
 		transition:scale={{ duration: dur, start: 0.94, opacity: 0, easing: backOut }}
 	>
-		<img {src} {alt} class="block max-h-[78vh] max-w-[78vw] object-contain" />
+		<img {src} {alt} class="block max-h-[62vh] max-w-[88vw] object-contain sm:max-h-[78vh]" />
 		<!-- aria-hidden: the img alt already carries this text -->
 		<span class="caption-bar bg-paper" aria-hidden="true">{alt}</span>
+	</div>
+
+	<div class="flex gap-4 sm:hidden">
+		{@render arrow(-1, 'flex')}
+		{@render arrow(1, 'flex')}
 	</div>
 </div>
