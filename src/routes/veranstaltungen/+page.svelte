@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { slide } from 'svelte/transition';
+	import { backOut } from 'svelte/easing';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { asset } from '$app/paths';
 	import { reveal } from '$lib/actions/reveal';
@@ -36,7 +36,23 @@
 	let activeLabels: EventLabel[] = $state([]);
 	let filterOpen = $state(false);
 
-	const dur = $derived(prefersReducedMotion.current ? 0 : 220);
+	const dur = $derived(prefersReducedMotion.current ? 0 : 260);
+
+	/**
+	 * Chips pop out to the right one after another. Written by hand rather than
+	 * composed from fly + scale, which cannot both drive `transform` at once —
+	 * the second would overwrite the first. backOut overshoots slightly, so it
+	 * reads as a pop rather than a slide.
+	 */
+	function popIn(_node: Element, { delay = 0, duration = 260 }) {
+		return {
+			delay,
+			duration,
+			easing: backOut,
+			css: (t: number, u: number) =>
+				`transform: translateX(${-30 * u}px) scale(${0.6 + 0.4 * t}); opacity: ${t}`
+		};
+	}
 
 	// Only offer labels that actually occur, so the filter can never present a
 	// choice that leads to an empty page.
@@ -49,6 +65,14 @@
 			? events
 			: events.filter((event) => event.labels.some((label) => activeLabels.includes(label)))
 	);
+
+	// Collapsing clears the filter: chips are the only place the active state is
+	// shown, so leaving one on behind a closed row would hide events with no
+	// visible reason.
+	function toggleFilter() {
+		filterOpen = !filterOpen;
+		if (!filterOpen) activeLabels = [];
+	}
 
 	function toggleLabel(label: EventLabel) {
 		activeLabels = activeLabels.includes(label)
@@ -116,32 +140,18 @@
 					class="hard hard-press hard-red rounded-full bg-paper px-4 py-1.5 font-hand text-lg font-bold"
 					>im SV</a
 				>
-			</div>
-		</div>
 
-		{#if failed}
-			<p class="hard-flat mt-10 rounded-2xl bg-paper p-5 font-bold">
-				Die Termine lassen sich gerade nicht laden. Das Semesterprogramm gibt es oben als PDF und
-				.ics.
-			</p>
-		{:else if events.length === 0}
-			<p data-js-only class="hard-flat mt-10 rounded-2xl bg-paper p-5 font-bold">
-				Gerade stehen keine Termine an. Das neue Semesterprogramm folgt bald.
-			</p>
-		{:else}
-			{#if availableLabels.length > 1}
-				<div data-js-only class="mt-8 flex flex-wrap items-center gap-2">
-					<!-- Collapsed by default; the icon carries the active state so a
-					     filter left on is never invisible. -->
+				{#if availableLabels.length > 1}
+					<!-- No height or width of its own: the row stretches it to match the
+					     buttons beside it. -->
 					<button
 						type="button"
+						data-js-only
 						aria-expanded={filterOpen}
 						aria-controls="event-filter"
 						aria-label={filterOpen ? 'Filter schließen' : 'Filter öffnen'}
-						onclick={() => (filterOpen = !filterOpen)}
-						class="hard hard-press flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full {activeLabels.length
-							? 'bg-ink text-paper'
-							: 'bg-paper'}"
+						onclick={toggleFilter}
+						class="hard hard-press flex cursor-pointer items-center justify-center rounded-full bg-paper px-3"
 					>
 						<svg
 							viewBox="0 0 24 24"
@@ -156,29 +166,43 @@
 					</button>
 
 					{#if filterOpen}
+						<!-- Each chip animates itself. Sliding the container open instead
+						     would need overflow:hidden, which clipped the chips' offset
+						     shadows until the animation finished. -->
 						<div
 							id="event-filter"
 							role="group"
 							aria-label="Termine nach Kategorie filtern"
-							class="flex flex-wrap items-center gap-2"
-							transition:slide={{ axis: 'x', duration: dur }}
+							class="flex flex-nowrap items-center gap-3"
 						>
-							{#each availableLabels as label (label)}
+							{#each availableLabels as label, i (label)}
 								{@const on = activeLabels.includes(label)}
 								<button
 									type="button"
 									aria-pressed={on}
 									onclick={() => toggleLabel(label)}
-									class="hard hard-press cursor-pointer rounded-full px-4 py-1.5 text-xs font-bold tracking-wide whitespace-nowrap uppercase {on
-										? 'bg-ink text-paper'
-										: 'bg-paper'}">{label}</button
+									transition:popIn|global={{ duration: dur, delay: i * 70 }}
+									class="hard hard-press cursor-pointer rounded-full bg-paper px-4 py-1.5 font-hand text-lg font-bold whitespace-nowrap {on
+										? 'hard-down'
+										: ''}">{label}</button
 								>
 							{/each}
 						</div>
 					{/if}
-				</div>
-			{/if}
+				{/if}
+			</div>
+		</div>
 
+		{#if failed}
+			<p class="hard-flat mt-10 rounded-2xl bg-paper p-5 font-bold">
+				Die Termine lassen sich gerade nicht laden. Das Semesterprogramm gibt es oben als PDF und
+				.ics.
+			</p>
+		{:else if events.length === 0}
+			<p data-js-only class="hard-flat mt-10 rounded-2xl bg-paper p-5 font-bold">
+				Gerade stehen keine Termine an. Das neue Semesterprogramm folgt bald.
+			</p>
+		{:else}
 			{#if shownEvents.length === 0}
 				<p data-js-only class="hard-flat mt-8 rounded-2xl bg-paper p-5 font-bold">
 					Keine Termine in dieser Auswahl.

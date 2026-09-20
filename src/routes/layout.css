@@ -169,6 +169,14 @@
 		box-shadow: 2px 2px 0 var(--hard-shadow);
 	}
 
+	/* Held down: a toggle that is on stays in the pressed position. Declared
+	   after the hover rule so an active toggle does not pop back up when the
+	   pointer is over it. */
+	.hard-press.hard-down {
+		transform: translate(3px, 3px);
+		box-shadow: 2px 2px 0 var(--hard-shadow);
+	}
+
 	/* Display type with an offset colour ghost behind it. */
 	.type-pop {
 		text-shadow: 3px 3px 0 var(--color-blue);
