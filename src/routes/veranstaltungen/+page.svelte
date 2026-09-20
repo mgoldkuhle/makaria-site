@@ -5,6 +5,7 @@
 	import {
 		calendar,
 		downloads,
+		EVENT_LABELS,
 		eventImageUrl,
 		fetchUpcomingEvents,
 		formatEventDate,
@@ -15,6 +16,7 @@
 		UPCOMING_LIMIT,
 		upcomingFromLocal,
 		weeklyLine,
+		type EventLabel,
 		type MakariaEvent
 	} from '$lib/data/events';
 	import CalendarDialog from '$lib/components/CalendarDialog.svelte';
@@ -25,6 +27,29 @@
 	let events: MakariaEvent[] = $state(upcomingFromLocal(placeholderEvents));
 	let failed = $state(false);
 	let calendarDialog: ReturnType<typeof CalendarDialog> | undefined = $state();
+
+	// Label filter. Nothing selected means no filter; several selected widen the
+	// result rather than narrowing it, since an event carries at most one of
+	// these in practice and AND would almost always come back empty.
+	let activeLabels: EventLabel[] = $state([]);
+
+	// Only offer labels that actually occur, so the filter can never present a
+	// choice that leads to an empty page.
+	const availableLabels = $derived(
+		EVENT_LABELS.filter((label) => events.some((event) => event.labels.includes(label)))
+	);
+
+	const shownEvents = $derived(
+		activeLabels.length === 0
+			? events
+			: events.filter((event) => event.labels.some((label) => activeLabels.includes(label)))
+	);
+
+	function toggleLabel(label: EventLabel) {
+		activeLabels = activeLabels.includes(label)
+			? activeLabels.filter((entry) => entry !== label)
+			: [...activeLabels, label];
+	}
 
 	// The heading is a plain "Veranstaltungen" for now.
 	//
@@ -59,9 +84,9 @@
 <div class="border-b-3 border-ink bg-blue">
 	<section class="mx-auto max-w-[88rem] px-6 py-20 sm:px-8 sm:py-28 lg:px-12">
 		<span class="section-mark bg-white" aria-hidden="true"></span>
-		<div class="mt-4 flex flex-wrap items-end gap-x-6 gap-y-4">
+		<div class="mt-4 flex flex-wrap items-end gap-x-6 gap-y-4 [&>h1]:min-w-0">
 			<h1
-				class="type-pop-ink font-display text-3xl font-bold text-white uppercase sm:text-5xl lg:text-6xl"
+				class="type-pop-ink font-display text-3xl font-bold break-words hyphens-auto text-white uppercase sm:text-5xl lg:text-6xl"
 			>
 				{semester}
 			</h1>
@@ -99,51 +124,82 @@
 				Gerade stehen keine Termine an. Das neue Semesterprogramm folgt bald.
 			</p>
 		{:else}
-			<div
-				use:reveal
-				data-js-only
-				class="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"
-			>
-				{#each events as event (event.id)}
-					{@const image = eventImageUrl(event.image)}
-					{@const time = formatEventTime(event.startsAt)}
-					{@const cancelled = event.labels.includes('Abgesagt')}
-					<article class="hard-flat overflow-hidden rounded-2xl bg-paper">
-						{#if image}
-							<div class="relative">
-								<img
-									src={image}
-									alt={event.imageAlt ?? ''}
-									class="aspect-video w-full border-b-3 border-ink object-cover {cancelled
-										? 'opacity-55 grayscale'
+			{#if availableLabels.length > 1}
+				<div
+					data-js-only
+					class="mt-8 flex flex-wrap items-center gap-2"
+					role="group"
+					aria-label="Termine nach Kategorie filtern"
+				>
+					{#each availableLabels as label (label)}
+						{@const on = activeLabels.includes(label)}
+						<button
+							type="button"
+							aria-pressed={on}
+							onclick={() => toggleLabel(label)}
+							class="hard hard-press cursor-pointer rounded-full px-4 py-1.5 text-xs font-bold tracking-wide uppercase {on
+								? 'bg-ink text-paper'
+								: 'bg-paper'}">{label}</button
+						>
+					{/each}
+				</div>
+			{/if}
+
+			{#if shownEvents.length === 0}
+				<p data-js-only class="hard-flat mt-8 rounded-2xl bg-paper p-5 font-bold">
+					Keine Termine in dieser Auswahl.
+				</p>
+			{:else}
+				<div
+					use:reveal
+					data-js-only
+					class="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"
+				>
+					{#each shownEvents as event (event.id)}
+						{@const image = eventImageUrl(event.image)}
+						{@const time = formatEventTime(event.startsAt)}
+						{@const cancelled = event.labels.includes('Abgesagt')}
+						<article class="hard-flat overflow-hidden rounded-2xl bg-paper">
+							{#if image}
+								<div class="relative">
+									<img
+										src={image}
+										alt={event.imageAlt ?? ''}
+										class="aspect-video w-full border-b-3 border-ink object-cover {cancelled
+											? 'opacity-55 grayscale'
+											: ''}"
+										loading="lazy"
+									/>
+									{#if event.labels.length}
+										<div class="absolute top-3 right-3 flex flex-wrap justify-end gap-2">
+											<EventLabels labels={event.labels} />
+										</div>
+									{/if}
+								</div>
+							{/if}
+							<div class="p-5">
+								<p class="text-xs font-bold tracking-[0.1em] uppercase">
+									{formatEventDate(event)}{#if time}<span class="text-ink/60"> · {time}</span>{/if}
+								</p>
+								<h2
+									class="mt-1 font-display text-xl font-bold break-words hyphens-auto {cancelled
+										? 'line-through'
 										: ''}"
-									loading="lazy"
-								/>
-								{#if event.labels.length}
-									<div class="absolute top-3 right-3 flex flex-wrap justify-end gap-2">
-										<EventLabels labels={event.labels} />
-									</div>
+								>
+									{event.title}
+								</h2>
+								{#if event.description}
+									<p class="mt-2 text-sm leading-relaxed text-ink/75">{event.description}</p>
+								{/if}
+								<!-- no photo to sit on, so the chips fall back into the body -->
+								{#if !image && event.labels.length}
+									<div class="mt-3 flex flex-wrap gap-2"><EventLabels labels={event.labels} /></div>
 								{/if}
 							</div>
-						{/if}
-						<div class="p-5">
-							<p class="text-xs font-bold tracking-[0.1em] uppercase">
-								{formatEventDate(event)}{#if time}<span class="text-ink/60"> · {time}</span>{/if}
-							</p>
-							<h2 class="mt-1 font-display text-xl font-bold {cancelled ? 'line-through' : ''}">
-								{event.title}
-							</h2>
-							{#if event.description}
-								<p class="mt-2 text-sm leading-relaxed text-ink/75">{event.description}</p>
-							{/if}
-							<!-- no photo to sit on, so the chips fall back into the body -->
-							{#if !image && event.labels.length}
-								<div class="mt-3 flex flex-wrap gap-2"><EventLabels labels={event.labels} /></div>
-							{/if}
-						</div>
-					</article>
-				{/each}
-			</div>
+						</article>
+					{/each}
+				</div>
+			{/if}
 		{/if}
 
 		<noscript>

@@ -152,7 +152,18 @@
 			box-shadow 0.14s ease;
 	}
 
-	.hard-press:hover,
+	/* :hover is gated behind a real pointer. A tap leaves :hover applied until
+	   something else is touched, which left buttons stuck in the pressed state
+	   on phones. :active covers touch, giving the press while the finger is
+	   down. */
+	@media (hover: hover) {
+		.hard-press:hover {
+			transform: translate(3px, 3px);
+			box-shadow: 2px 2px 0 var(--hard-shadow);
+		}
+	}
+
+	.hard-press:active,
 	.hard-press:focus-visible {
 		transform: translate(3px, 3px);
 		box-shadow: 2px 2px 0 var(--hard-shadow);
@@ -240,7 +251,12 @@
 			transform 0.18s ease;
 	}
 
-	.slide-lift:hover,
+	@media (hover: hover) {
+		.slide-lift:hover {
+			transform: translateY(-0.5rem);
+		}
+	}
+
 	.slide-lift:focus-within {
 		transform: translateY(-0.5rem);
 	}
@@ -288,6 +304,7 @@
 		}
 
 		.hard-press:hover,
+		.hard-press:active,
 		.hard-press:focus-visible {
 			transform: none;
 		}

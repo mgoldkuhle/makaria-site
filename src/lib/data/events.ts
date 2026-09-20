@@ -64,7 +64,8 @@ export const labelStyles: Record<EventLabel, string> = {
 	Abgesagt: 'bg-red text-white'
 };
 
-const KNOWN_LABELS: EventLabel[] = ['Intern', 'SV', 'Abgesagt'];
+/** Every label the site knows, in the order the filter shows them. */
+export const EVENT_LABELS: readonly EventLabel[] = ['Intern', 'SV', 'Abgesagt'];
 
 /* ---- fetching ------------------------------------------------------------ */
 
@@ -83,7 +84,7 @@ function toLabels(value: unknown): EventLabel[] {
 			: [];
 	return raw
 		.map((entry) => String(entry).trim().replace(/^"|"$/g, ''))
-		.filter((entry): entry is EventLabel => (KNOWN_LABELS as string[]).includes(entry));
+		.filter((entry): entry is EventLabel => (EVENT_LABELS as readonly string[]).includes(entry));
 }
 
 /**

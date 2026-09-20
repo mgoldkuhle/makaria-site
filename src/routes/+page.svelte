@@ -367,7 +367,9 @@
 						<p class="text-xs font-bold tracking-[0.1em] text-red uppercase">
 							{formatEventDate(event)}
 						</p>
-						<h3 class="mt-1 font-display text-xl font-bold">{event.title}</h3>
+						<h3 class="mt-1 font-display text-xl font-bold break-words hyphens-auto">
+							{event.title}
+						</h3>
 						{#if !image && event.labels.length}
 							<div class="mt-3 flex flex-wrap gap-2"><EventLabels labels={event.labels} /></div>
 						{/if}
