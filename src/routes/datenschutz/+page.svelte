@@ -43,7 +43,7 @@
 		Wir speichern nichts auf Deinem Gerät. Die Website setzt keine Cookies, nutzt weder Local
 		Storage noch vergleichbare Techniken und bindet keine Analyse- oder Tracking-Dienste ein. Aus
 		diesem Grund fragen wir auch keine Einwilligung in Cookies ab. Die verwendeten Schriftarten
-		liegen auf unserem eigenen Server, es entsteht also keine Verbindung zu Google Fonts.
+		liegen auf unserem eigenen Server.
 	</p>
 
 	<h2>Veranstaltungsdaten</h2>
