@@ -12,6 +12,7 @@
 		fetchUpcomingEvents,
 		formatEventDate,
 		formatEventTime,
+		isOpenEvent,
 		isSupabaseConfigured,
 		placeholderEvents,
 		// semesterLabel, // see the heading note below
@@ -39,10 +40,18 @@
 	let failed = $state(false);
 	let calendarDialog: ReturnType<typeof CalendarDialog> | undefined = $state();
 
-	// Label filter. Nothing selected means no filter; several selected widen the
-	// result rather than narrowing it, since an event carries at most one of
-	// these in practice and AND would almost always come back empty.
-	let activeLabels: EventLabel[] = $state([]);
+	// Filter options: "Offen" plus whichever labels occur. Offen is an exclusion
+	// rather than a label match, so options are matched through a predicate.
+	// Nothing selected means no filter; several selected widen the result rather
+	// than narrowing it, since an event carries at most one label in practice and
+	// AND would almost always come back empty.
+	type FilterKey = 'Offen' | EventLabel;
+
+	function matches(event: MakariaEvent, key: FilterKey) {
+		return key === 'Offen' ? isOpenEvent(event) : event.labels.includes(key);
+	}
+
+	let activeFilters: FilterKey[] = $state([]);
 	let filterOpen = $state(false);
 
 	const dur = $derived(prefersReducedMotion.current ? 0 : 260);
@@ -63,16 +72,18 @@
 		};
 	}
 
-	// Only offer labels that actually occur, so the filter can never present a
-	// choice that leads to an empty page.
-	const availableLabels = $derived(
-		EVENT_LABELS.filter((label) => events.some((event) => event.labels.includes(label)))
+	// Only offer options that actually match something, so the filter can never
+	// present a choice that leads to an empty page. Offen leads.
+	const availableFilters = $derived(
+		(['Offen', ...EVENT_LABELS] as FilterKey[]).filter((key) =>
+			events.some((event) => matches(event, key))
+		)
 	);
 
 	const shownEvents = $derived(
-		activeLabels.length === 0
+		activeFilters.length === 0
 			? events
-			: events.filter((event) => event.labels.some((label) => activeLabels.includes(label)))
+			: events.filter((event) => activeFilters.some((key) => matches(event, key)))
 	);
 
 	// Collapsing clears the filter: chips are the only place the active state is
@@ -80,13 +91,13 @@
 	// visible reason.
 	function toggleFilter() {
 		filterOpen = !filterOpen;
-		if (!filterOpen) activeLabels = [];
+		if (!filterOpen) activeFilters = [];
 	}
 
-	function toggleLabel(label: EventLabel) {
-		activeLabels = activeLabels.includes(label)
-			? activeLabels.filter((entry) => entry !== label)
-			: [...activeLabels, label];
+	function toggleKey(key: FilterKey) {
+		activeFilters = activeFilters.includes(key)
+			? activeFilters.filter((entry) => entry !== key)
+			: [...activeFilters, key];
 	}
 
 	// The heading is a plain "Kalender" for now.
@@ -154,7 +165,7 @@
 					>im SV</a
 				>
 
-				{#if availableLabels.length > 1}
+				{#if availableFilters.length > 1}
 					<!-- The icon sits in a box one text-line tall (h-7 = text-lg's 1.75rem
 					     line height), so with the same py-1.5 the button is exactly as
 					     tall as the buttons beside it. Relying on the row to stretch it
@@ -193,16 +204,16 @@
 							aria-label="Termine nach Kategorie filtern"
 							class="flex flex-nowrap items-center gap-3"
 						>
-							{#each availableLabels as label, i (label)}
-								{@const on = activeLabels.includes(label)}
+							{#each availableFilters as key, i (key)}
+								{@const on = activeFilters.includes(key)}
 								<button
 									type="button"
 									aria-pressed={on}
-									onclick={() => toggleLabel(label)}
+									onclick={() => toggleKey(key)}
 									transition:popIn|global={{ duration: dur, delay: i * 70 }}
 									class="hard hard-press cursor-pointer rounded-full bg-paper px-4 py-1.5 font-hand text-lg font-bold whitespace-nowrap {on
 										? 'hard-down'
-										: ''}">{label}</button
+										: ''}">{key}</button
 								>
 							{/each}
 						</div>
@@ -235,7 +246,7 @@
 			{:else}
 				<!-- Keyed on the filter: changing it remounts the grid, which re-runs
 				     use:reveal so the cards animate in again instead of swapping. -->
-				{#key activeLabels.join('|')}
+				{#key activeFilters.join('|')}
 					<div
 						use:reveal
 						data-js-only

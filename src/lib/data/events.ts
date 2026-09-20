@@ -177,6 +177,10 @@ export type LandingEvents = { next: MakariaEvent | null; highlights: MakariaEven
 /** Internal events are for members; the landing page shows public ones only. */
 export const isPublicEvent = (event: MakariaEvent) => !event.labels.includes('Intern');
 
+/** Open to anyone: neither members-only nor an SV event. */
+export const isOpenEvent = (event: MakariaEvent) =>
+	!event.labels.includes('Intern') && !event.labels.includes('SV');
+
 /**
  * What the landing page shows: the next `count` upcoming public events, soonest
  * first. Intern events are left to the Veranstaltungen page. Past events never
