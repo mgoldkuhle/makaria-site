@@ -13,16 +13,8 @@
 	<p>
 		AMV&nbsp;Makaria&nbsp;Bonn<br />
 		Bonner&nbsp;Talweg&nbsp;60<br />
-		53113&nbsp;Bonn
-	</p>
-
-	<p>E-Mail: kontakt@amv-makaria.de</p>
-
-	<p>
-		Vorstand:<br />
-		X - Sophie Dierck<br />
-		XX - Lukas Raschke<br />
-		XXX - Sebastian Meiring
+		53113&nbsp;Bonn<br />
+		E-Mail: kontakt@amv-makaria.de
 	</p>
 
 	<h2>Haftungsausschluss</h2>
