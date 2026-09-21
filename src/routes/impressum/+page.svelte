@@ -1,5 +1,24 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import Seo from '$lib/components/Seo.svelte';
+	import { fetchVorstand } from '$lib/data/vorstand';
+
+	let { data } = $props();
+
+	// Prerendered from the build; refreshed here so a change of office in Meine
+	// Makaria shows up without a rebuild. A failed or empty refresh keeps the
+	// prerendered names rather than blanking the Impressum.
+	// svelte-ignore state_referenced_locally
+	let vorstand = $state(data.vorstand);
+
+	onMount(async () => {
+		try {
+			const aktuell = await fetchVorstand();
+			if (aktuell?.length) vorstand = aktuell;
+		} catch (error) {
+			console.error('[impressum] Aktualisierung fehlgeschlagen:', error);
+		}
+	});
 </script>
 
 <Seo title="Impressum" description="Impressum und Haftungsausschluss der AMV Makaria Bonn." />
@@ -19,10 +38,14 @@
 	<p>E-Mail: kontakt@amv-makaria.de</p>
 
 	<p>
-		Vorstand:<br />
-		X - Sophie Dierck<br />
-		XX - Lukas Raschke<br />
-		XXX - Sebastian Meiring
+		Vorstand:
+		{#if vorstand?.length}
+			{#each vorstand as mitglied (mitglied.amt)}
+				<br />{mitglied.name} ({mitglied.amt})
+			{/each}
+		{:else}
+			<br />Der Vorstand konnte gerade nicht geladen werden.
+		{/if}
 	</p>
 
 	<h2>Haftungsausschluss</h2>
