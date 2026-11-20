@@ -67,7 +67,7 @@
 		},
 		{
 			title: 'Der Konzertsaal',
-			text: 'Ein Flügel, gute Akustik und viel Platz für Ensembles, Theater und unsere Feste. Der Kneipsaal liegt gleich nebenan, für die Party danach und unsere Mitgliederversammlungen.',
+			text: 'Ein Flügel, gute Akustik und viel Platz für Ensembles, Theater und unsere Konzerte. Der Kneipsaal für unsere Feste und Mitgliederversammlungen liegt direkt nebenan.',
 			image: '/img/konzertsaal-licht.jpg',
 			alt: 'Der Konzertsaal mit Flügel, Lichterketten und bunter Bühnenbeleuchtung'
 		},
