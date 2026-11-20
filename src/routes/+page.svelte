@@ -124,6 +124,11 @@
 		},
 		{
 			kind: 'photo',
+			src: '/img/konzert-duo.jpg',
+			alt: 'Duo mit Gitarre und Gesang vor dem Flügel im Konzertsaal'
+		},
+		{
+			kind: 'photo',
 			src: '/img/theater.jpg',
 			alt: 'Zwei Schauspielende vor rosa beleuchteter Wand mit bunten Schatten'
 		},
@@ -137,6 +142,11 @@
 			kind: 'photo',
 			src: '/img/wohnzimmer.jpg',
 			alt: 'Sonnenlicht im Wohnzimmer, Wappen in den Fenstern'
+		},
+		{
+			kind: 'photo',
+			src: '/img/bar.jpg',
+			alt: 'Hinter der Bar beim Vorbereiten der Getränke'
 		},
 		{
 			kind: 'photo',
@@ -162,6 +172,11 @@
 			kind: 'photo',
 			src: '/img/stiftungsfest.jpg',
 			alt: 'Festlich gedeckte Tafel zum Stiftungsfest'
+		},
+		{
+			kind: 'photo',
+			src: '/img/kostuemparty.jpg',
+			alt: 'Geschminkte und verkleidete Gäste auf einer Kostümparty'
 		},
 		{
 			kind: 'photo',
