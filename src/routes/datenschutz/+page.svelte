@@ -48,11 +48,11 @@
 
 	<h2>Veranstaltungsdaten</h2>
 	<p>
-		Die Termine auf der Startseite und im Kalender lädt Dein Browser direkt aus unserer Datenbank
-		bei der Supabase Inc. Das Projekt liegt in der Region Deutschland, die Daten werden also in der
-		EU verarbeitet. Dabei wird Deine IP-Adresse an den Dienst übertragen, weil sie für den Abruf
-		technisch nötig ist. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO, unser berechtigtes
-		Interesse an der Anzeige aktueller Termine.
+		Die Termine auf der Startseite und im Kalender sowie den aktuellen Vorstand im Impressum lädt
+		Dein Browser direkt aus unserer Datenbank bei der Supabase Inc. Das Projekt liegt in der Region
+		Deutschland, die Daten werden also in der EU verarbeitet. Dabei wird Deine IP-Adresse an den
+		Dienst übertragen, weil sie für den Abruf technisch nötig ist. Rechtsgrundlage ist Art. 6 Abs. 1
+		lit. f DSGVO, unser berechtigtes Interesse an der Anzeige aktueller Termine und Angaben.
 	</p>
 	<p>
 		Supabase nutzt Cloudflare zur Abwehr automatisierter Zugriffe. Cloudflare setzt dabei das Cookie
