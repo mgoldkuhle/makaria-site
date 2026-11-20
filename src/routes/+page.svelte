@@ -68,14 +68,14 @@
 		{
 			title: 'Der Konzertsaal',
 			text: 'Ein Flügel, gute Akustik und viel Platz für Ensembles, Theater und unsere Feste. Der Kneipsaal liegt gleich nebenan, für die Party danach und unsere Mitgliederversammlungen.',
-			image: '/img/konzertsaal.jpg',
-			alt: 'Hände am Flügel im Konzertsaal'
+			image: '/img/konzertsaal-licht.jpg',
+			alt: 'Der Konzertsaal mit Flügel, Lichterketten und bunter Bühnenbeleuchtung'
 		},
 		{
 			title: 'Der Jazzkeller',
 			text: 'Unser Proberaum im Keller, mit Verstärkern, Schlagzeug und allem, was sonst noch dazugehört. Hier proben die Bands der Makaria und von Freunden, hier wird gejammt und aufgenommen.',
-			image: '/img/jazzkeller.jpg',
-			alt: 'Bandprobe im Jazzkeller'
+			image: '/img/pedalboard.jpg',
+			alt: 'Effektpedale bei der Bandprobe im Jazzkeller'
 		},
 		{
 			title: 'Der Garten',
@@ -105,23 +105,85 @@
 			poster: '/img/konzertsaal.jpg',
 			label: 'Video: Makaria aLive Concert'
 		},
+		{ kind: 'photo', src: '/img/band.jpg', alt: 'Band im Nebel und bunten Bühnenlicht' },
 		{
 			kind: 'photo',
 			src: '/img/open-mic.jpg',
 			alt: 'Auftritt bei der Open-Mic-Night im Wohnzimmer'
+		},
+		{ kind: 'photo', src: '/img/oud.jpg', alt: 'Nahaufnahme eines Musikers an der Oud' },
+		{
+			kind: 'photo',
+			src: '/img/publikum.jpg',
+			alt: 'Publikum im Halbdunkel neben einer Stehlampe'
 		},
 		{
 			kind: 'photo',
 			src: '/img/unplugged_woziko.jpg',
 			alt: 'Publikum bei WoZiKo unplugged im Wohnzimmer'
 		},
+		{
+			kind: 'photo',
+			src: '/img/theater.jpg',
+			alt: 'Zwei Schauspielende vor rosa beleuchteter Wand mit bunten Schatten'
+		},
 		{ kind: 'photo', src: '/img/konzertsaal.jpg', alt: 'Hände am Flügel im Konzertsaal' },
+		{
+			kind: 'photo',
+			src: '/img/konzert-publikum.jpg',
+			alt: 'Konzert in violettem Licht, Publikum dicht vor der Band'
+		},
+		{
+			kind: 'photo',
+			src: '/img/wohnzimmer.jpg',
+			alt: 'Sonnenlicht im Wohnzimmer, Wappen in den Fenstern'
+		},
+		{
+			kind: 'photo',
+			src: '/img/theater-2.jpg',
+			alt: 'Theateraufführung im Konzertsaal, Publikum im Vordergrund'
+		},
+		{
+			kind: 'photo',
+			src: '/img/halloween.jpg',
+			alt: 'Tanzende auf der Halloweenparty im Schwarzlicht'
+		},
+		{
+			kind: 'photo',
+			src: '/img/konzertsaal-licht.jpg',
+			alt: 'Der Konzertsaal mit Flügel, Lichterketten und bunter Bühnenbeleuchtung'
+		},
+		{
+			kind: 'photo',
+			src: '/img/soundcheck.jpg',
+			alt: 'Aufbau und Soundcheck im Konzertsaal'
+		},
 		{
 			kind: 'photo',
 			src: '/img/stiftungsfest.jpg',
 			alt: 'Festlich gedeckte Tafel zum Stiftungsfest'
 		},
-		{ kind: 'photo', src: '/img/garten.jpg', alt: 'Blumenbeete im Garten' }
+		{
+			kind: 'photo',
+			src: '/img/open-mic-buehne.jpg',
+			alt: 'Bühne mit Stehlampen, Gitarre und Mischpult vor dem Open Mic'
+		},
+		{
+			kind: 'photo',
+			src: '/img/dachterrasse.jpg',
+			alt: 'Gemeinsames Essen unter dem Sonnenschirm auf der Dachterrasse'
+		},
+		{
+			kind: 'photo',
+			src: '/img/garten-oben.jpg',
+			alt: 'Blick von oben auf Terrasse und Garten'
+		},
+		{ kind: 'photo', src: '/img/garten.jpg', alt: 'Blumenbeete im Garten' },
+		{
+			kind: 'photo',
+			src: '/img/saal-parkett.jpg',
+			alt: 'Parkettschleifen im leergeräumten Saal'
+		}
 	];
 
 	const photos = slides.filter(
@@ -254,10 +316,10 @@
 			<div class="hidden md:block md:grow-2" aria-hidden="true"></div>
 			<p class="hard max-w-[46ch] bg-paper p-5 text-lg leading-relaxed font-medium">
 				Hast Du Interesse an Musik? Dann bist Du bei uns an der richtigen Adresse. Neben einem
-				„beflügelten“ Konzertsaal und unserem Jazzkeller haben wir noch viel weiteren Raum zur
-				künstlerischen Entfaltung. In unserem schönen Haus in der Bonner Südstadt kommen rund 20
-				aktive Mitglieder der AMV&nbsp;Makaria&nbsp;Bonn zusammen, musizieren gemeinsam, spielen
-				Theater und organisieren Konzerte, Filmabende und Vorträge.
+				„beflügelten“ Konzertsaal und unserem Jazzkeller haben wir viel Raum zur künstlerischen
+				Entfaltung zu bieten. In unserem schönen Haus in der Bonner Südstadt kommen rund 20 aktive
+				Mitglieder der AMV&nbsp;Makaria&nbsp;Bonn zusammen, musizieren gemeinsam, spielen Theater
+				und organisieren Konzerte, Filmabende und Vorträge.
 			</p>
 			<div class="hidden md:block md:grow" aria-hidden="true"></div>
 		</div>
@@ -280,8 +342,8 @@
 			<div class="grid grid-cols-2 gap-5 lg:gap-6">
 				<div class="hard-flat relative h-44 overflow-hidden rounded-2xl lg:h-52">
 					<img
-						src={asset('/img/jazzkeller.jpg')}
-						alt="Bandprobe im Jazzkeller"
+						src={asset('/img/pedalboard.jpg')}
+						alt="Effektpedale bei der Bandprobe im Jazzkeller"
 						loading="lazy"
 						class="h-full w-full object-cover"
 					/>
