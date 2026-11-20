@@ -351,12 +351,12 @@
 				</div>
 				<div class="hard-flat relative h-44 overflow-hidden rounded-2xl lg:h-52">
 					<img
-						src={asset('/img/konzertsaal.jpg')}
-						alt="Hände am Flügel im Konzertsaal"
+						src={asset('/img/theater.jpg')}
+						alt="Zwei Schauspielende vor rosa beleuchteter Wand mit bunten Schatten"
 						loading="lazy"
 						class="h-full w-full object-cover"
 					/>
-					<span class="caption-bar bg-gold">Konzertsaal</span>
+					<span class="caption-bar bg-gold">Theatergruppe</span>
 				</div>
 			</div>
 			<a
