@@ -342,8 +342,8 @@
 			<div class="grid grid-cols-2 gap-5 lg:gap-6">
 				<div class="hard-flat relative h-44 overflow-hidden rounded-2xl lg:h-52">
 					<img
-						src={asset('/img/pedalboard.jpg')}
-						alt="Effektpedale bei der Bandprobe im Jazzkeller"
+						src={asset('/img/jazzkeller.jpg')}
+						alt="Bandprobe im Jazzkeller"
 						loading="lazy"
 						class="h-full w-full object-cover"
 					/>

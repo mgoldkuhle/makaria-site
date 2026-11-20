@@ -399,6 +399,6 @@ export const calendar = {
 };
 
 export const downloads = {
-	pdf: '/programm/sempro26.pdf' as const,
+	pdf: '/programm/Sempro%20WS%2026-27.pdf' as const,
 	svEvents: 'https://sv.org/veranstaltungen/'
 };
