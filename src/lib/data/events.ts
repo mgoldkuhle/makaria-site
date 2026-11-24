@@ -185,13 +185,18 @@ export const isOpenEvent = (event: MakariaEvent) =>
  * What the landing page shows: the next `count` upcoming public events, soonest
  * first. Intern events are left to the Veranstaltungen page. Past events never
  * appear; with nothing upcoming the row stays empty and the page shows a hint.
+ *
+ * `next`, the "Nächstes Event" card in the hero, is stricter: only an event
+ * anyone can come to, so no SV events either, and nothing cancelled. Without
+ * one the card links to the Kalender instead.
  */
 export function selectLandingEvents(
 	upcoming: MakariaEvent[],
 	count = LANDING_COUNT
 ): LandingEvents {
 	const shown = upcoming.filter(isPublicEvent);
-	return { highlights: shown.slice(0, count), next: shown[0] ?? null };
+	const next = upcoming.find((event) => isOpenEvent(event) && !event.labels.includes('Abgesagt'));
+	return { highlights: shown.slice(0, count), next: next ?? null };
 }
 
 /** Same rule applied to a local array, for the placeholder path. */

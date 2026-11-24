@@ -93,112 +93,51 @@
 		| { kind: 'photo'; src: string; alt: string };
 
 	const slides: Slide[] = [
-		{ kind: 'photo', src: '/img/fassade.jpg', alt: 'Der komplette Giebel der Fassade' },
-		{
-			kind: 'photo',
-			src: '/img/hauswand.jpg',
-			alt: 'Efeubewachsenes Fenster mit kleinen Wappen im Glas'
-		},
+		{ kind: 'photo', src: '/img/fassade.jpg', alt: 'Die Fassade unseres Jugendstilhauses' },
 		{
 			kind: 'video',
 			src: 'https://www.youtube-nocookie.com/embed/2LPgcADhYe4',
 			poster: '/img/konzertsaal.jpg',
 			label: 'Video: Makaria aLive Concert'
 		},
-		{ kind: 'photo', src: '/img/band.jpg', alt: 'Band im Nebel und bunten Bühnenlicht' },
+		{ kind: 'photo', src: '/img/band.jpg', alt: 'Live in der Makaria' },
 		{
 			kind: 'photo',
 			src: '/img/open-mic.jpg',
-			alt: 'Auftritt bei der Open-Mic-Night im Wohnzimmer'
+			alt: '10 Slots à 10 Minuten bei der Open-Mic-Night'
 		},
-		{ kind: 'photo', src: '/img/oud.jpg', alt: 'Nahaufnahme eines Musikers an der Oud' },
-		{
-			kind: 'photo',
-			src: '/img/publikum.jpg',
-			alt: 'Publikum im Halbdunkel neben einer Stehlampe'
-		},
+		{ kind: 'photo', src: '/img/oud.jpg', alt: 'Arabische Oud beim Konzert zum Stiftungsfest' },
+		{ kind: 'photo', src: '/img/publikum.jpg', alt: 'Cozy Vibes im Konzertsaal' },
 		{
 			kind: 'photo',
 			src: '/img/unplugged_woziko.jpg',
-			alt: 'Publikum bei WoZiKo unplugged im Wohnzimmer'
+			alt: 'Volles Wohnzimmer beim WoZiKo unplugged'
 		},
-		{
-			kind: 'photo',
-			src: '/img/konzert-duo.jpg',
-			alt: 'Duo mit Gitarre und Gesang vor dem Flügel im Konzertsaal'
-		},
-		{
-			kind: 'photo',
-			src: '/img/theater.jpg',
-			alt: 'Zwei Schauspielende vor rosa beleuchteter Wand mit bunten Schatten'
-		},
-		{ kind: 'photo', src: '/img/konzertsaal.jpg', alt: 'Hände am Flügel im Konzertsaal' },
-		{
-			kind: 'photo',
-			src: '/img/konzert-publikum.jpg',
-			alt: 'Konzert in violettem Licht, Publikum dicht vor der Band'
-		},
-		{
-			kind: 'photo',
-			src: '/img/wohnzimmer.jpg',
-			alt: 'Sonnenlicht im Wohnzimmer, Wappen in den Fenstern'
-		},
-		{
-			kind: 'photo',
-			src: '/img/bar.jpg',
-			alt: 'Hinter der Bar beim Vorbereiten der Getränke'
-		},
-		{
-			kind: 'photo',
-			src: '/img/theater-2.jpg',
-			alt: 'Theateraufführung im Konzertsaal, Publikum im Vordergrund'
-		},
-		{
-			kind: 'photo',
-			src: '/img/halloween.jpg',
-			alt: 'Tanzende auf der Halloweenparty im Schwarzlicht'
-		},
+		{ kind: 'photo', src: '/img/konzert-duo.jpg', alt: 'Gitarre und Gesang' },
+		{ kind: 'photo', src: '/img/theater.jpg', alt: 'Unsere Theatergruppe in Aktion' },
+		{ kind: 'photo', src: '/img/konzertsaal.jpg', alt: 'Am Flügel im Konzertsaal' },
+		{ kind: 'photo', src: '/img/konzert-publikum.jpg', alt: 'Nebelmaschine immer dabei' },
+		{ kind: 'photo', src: '/img/wohnzimmer.jpg', alt: 'Der Kneipsaal' },
+		{ kind: 'photo', src: '/img/bar.jpg', alt: 'An der Bar' },
+		{ kind: 'photo', src: '/img/theater-2.jpg', alt: 'Impro-Theater' },
+		{ kind: 'photo', src: '/img/halloween.jpg', alt: 'Halloween im Techno-Keller' },
 		{
 			kind: 'photo',
 			src: '/img/konzertsaal-licht.jpg',
-			alt: 'Der Konzertsaal mit Flügel, Lichterketten und bunter Bühnenbeleuchtung'
+			alt: 'Der Konzertsaal ist bereit für den Abend'
 		},
-		{
-			kind: 'photo',
-			src: '/img/soundcheck.jpg',
-			alt: 'Aufbau und Soundcheck im Konzertsaal'
-		},
-		{
-			kind: 'photo',
-			src: '/img/stiftungsfest.jpg',
-			alt: 'Festlich gedeckte Tafel zum Stiftungsfest'
-		},
-		{
-			kind: 'photo',
-			src: '/img/kostuemparty.jpg',
-			alt: 'Geschminkte und verkleidete Gäste auf einer Kostümparty'
-		},
-		{
-			kind: 'photo',
-			src: '/img/open-mic-buehne.jpg',
-			alt: 'Bühne mit Stehlampen, Gitarre und Mischpult vor dem Open Mic'
-		},
-		{
-			kind: 'photo',
-			src: '/img/dachterrasse.jpg',
-			alt: 'Gemeinsames Essen unter dem Sonnenschirm auf der Dachterrasse'
-		},
-		{
-			kind: 'photo',
-			src: '/img/garten-oben.jpg',
-			alt: 'Blick von oben auf Terrasse und Garten'
-		},
-		{ kind: 'photo', src: '/img/garten.jpg', alt: 'Blumenbeete im Garten' },
+		{ kind: 'photo', src: '/img/soundcheck.jpg', alt: 'Aufbau und Soundcheck vor dem Konzert' },
+		{ kind: 'photo', src: '/img/stiftungsfest.jpg', alt: 'Die Festtafel zu unserem Stiftungsfest' },
+		{ kind: 'photo', src: '/img/kostuemparty.jpg', alt: 'Kostümparty an Halloween' },
+		{ kind: 'photo', src: '/img/dachterrasse.jpg', alt: 'Freunde zu Besuch auf der Dachterrasse' },
+		{ kind: 'photo', src: '/img/garten-oben.jpg', alt: 'Unser Garten von oben' },
+		{ kind: 'photo', src: '/img/garten.jpg', alt: 'Es blüht in unserem Garten' },
 		{
 			kind: 'photo',
 			src: '/img/saal-parkett.jpg',
-			alt: 'Parkettschleifen im leergeräumten Saal'
-		}
+			alt: 'Viele Arbeiten am Haus erledigen wir selbst'
+		},
+		{ kind: 'photo', src: '/img/hauswand.jpg', alt: 'Die Hausrückseite ist mit Wein überwuchert' }
 	];
 
 	const photos = slides.filter(
@@ -383,12 +322,15 @@
 				     than the title, so a long event name can't push it out of the
 				     card. A date too long even for that (a range across months or
 				     years) wraps onto its own line instead of overflowing. -->
+				<!-- With no open event coming up (Intern, SV and cancelled ones don't
+				     count) the card drops the date and simply points to the Kalender. -->
 				<span class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
-					<span class="text-xs font-bold tracking-[0.1em] text-muted uppercase">Nächstes Event</span
+					<span class="text-xs font-bold tracking-[0.1em] text-muted uppercase"
+						>{loadingEvents || landing.next ? 'Nächstes Event' : 'Nächste Events'}</span
 					>
-					{#if !loadingEvents}
+					{#if !loadingEvents && landing.next}
 						<span class="max-w-full rounded-full bg-gold px-3 py-1 text-sm font-bold text-ink"
-							>{landing.next ? formatEventDate(landing.next) : 'Alle Termine'}</span
+							>{formatEventDate(landing.next)}</span
 						>
 					{/if}
 				</span>
@@ -397,9 +339,26 @@
 						><span class="spinner spinner-sm" aria-hidden="true"></span>
 						<span class="sr-only">Termine werden geladen</span></span
 					>
-				{:else}
+				{:else if landing.next}
 					<span class="font-display text-lg font-bold break-words hyphens-auto"
-						>{landing.next?.title ?? 'Programm ansehen'}</span
+						>{landing.next.title}</span
+					>
+				{:else}
+					<span class="flex items-center gap-2 font-display text-lg font-bold"
+						>Kalender
+						<svg
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.5"
+							class="h-4 w-4"
+							aria-hidden="true"
+							><path
+								d="M5 12h14M13 6l6 6-6 6"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/></svg
+						></span
 					>
 				{/if}
 			</a>
