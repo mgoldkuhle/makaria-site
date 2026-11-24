@@ -377,25 +377,29 @@
 			<a
 				href={resolve('/veranstaltungen')}
 				data-js-only
-				class="hard hard-press flex items-center justify-between gap-3 rounded-2xl bg-paper p-4"
+				class="hard hard-press flex flex-col gap-1.5 rounded-2xl bg-paper p-4"
 			>
-				<span class="flex flex-col">
+				<!-- The date sits in the top-right corner, beside the label rather
+				     than the title, so a long event name can't push it out of the
+				     card. A date too long even for that (a range across months or
+				     years) wraps onto its own line instead of overflowing. -->
+				<span class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
 					<span class="text-xs font-bold tracking-[0.1em] text-muted uppercase">Nächstes Event</span
 					>
-					{#if loadingEvents}
-						<span class="flex h-7 items-center"
-							><span class="spinner spinner-sm" aria-hidden="true"></span>
-							<span class="sr-only">Termine werden geladen</span></span
-						>
-					{:else}
-						<span class="font-display text-lg font-bold"
-							>{landing.next?.title ?? 'Programm ansehen'}</span
+					{#if !loadingEvents}
+						<span class="max-w-full rounded-full bg-gold px-3 py-1 text-sm font-bold text-ink"
+							>{landing.next ? formatEventDate(landing.next) : 'Alle Termine'}</span
 						>
 					{/if}
 				</span>
-				{#if !loadingEvents}
-					<span class="shrink-0 rounded-full bg-gold px-3 py-1.5 text-sm font-bold text-ink"
-						>{landing.next ? formatEventDate(landing.next) : 'Alle Termine'}</span
+				{#if loadingEvents}
+					<span class="flex h-7 items-center"
+						><span class="spinner spinner-sm" aria-hidden="true"></span>
+						<span class="sr-only">Termine werden geladen</span></span
+					>
+				{:else}
+					<span class="font-display text-lg font-bold break-words hyphens-auto"
+						>{landing.next?.title ?? 'Programm ansehen'}</span
 					>
 				{/if}
 			</a>
